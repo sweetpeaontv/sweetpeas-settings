@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://cbaptu3r6kh5j"]
+
+[ext_resource type="Script" uid="uid://b8b3ldgqg4d8e" path="res://addons/sweetpeas-settings/ui/settings.gd" id="1_seove"]
+
+[node name="Settings" type="VBoxContainer" unique_id=43894109]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_seove")
+
+[node name="Header" type="Control" parent="." unique_id=244944212]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+
+[node name="TabBar" type="TabBar" parent="Header" unique_id=555041673]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Body" type="Control" parent="." unique_id=1169595213]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3

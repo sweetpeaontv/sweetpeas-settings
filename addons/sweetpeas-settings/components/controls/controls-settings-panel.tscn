@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://dij2d0mh32tss"]
+
+[ext_resource type="PackedScene" uid="uid://14pcikrgghwh" path="res://addons/sweetpeas-settings/components/settings-panel.tscn" id="1_7xcny"]
+
+[node name="ControlSettingsPanel" unique_id=524869306 instance=ExtResource("1_7xcny")]
+
+[node name="Label" type="Label" parent="VBoxContainer" parent_id_path=PackedInt32Array(1718448380) index="0" unique_id=1866213580]
+layout_mode = 2
+text = "Controls"
