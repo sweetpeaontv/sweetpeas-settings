@@ -4,8 +4,6 @@ An open source, drop-in settings menu for Godot games.
 
 It ships with the settings most games already need — language, sensitivity, resolution, display mode, VSync, FPS cap, volume sliders, and keybinds — and is built to be extended. Use it as-is to get a working menu quickly, or treat it as a jumping-off point and reshape it for your project.
 
----
-
 ## Features
 
 - **Ready-made defaults** for gameplay, graphics, audio, and controls
@@ -13,8 +11,6 @@ It ships with the settings most games already need — language, sensitivity, re
 - **Automatic keybinds** — Input Map actions are parsed into editable bindings
 - **Simple, themeable UI** — style it with Godot themes, or swap/edit the scenes yourself
 - **Autoload on enable** — enabling the plugin registers `SettingsManager` for you
-
----
 
 ## Installation
 
@@ -31,8 +27,6 @@ It ships with the settings most games already need — language, sensitivity, re
 3. Download and install, then enable the plugin under **Project → Project Settings → Plugins**
 
 Once enabled, the plugin adds the `SettingsManager` autoload. Instance `res://addons/sweetpeas-settings/ui/settings.tscn` wherever you want the menu (pause screen, options button, etc.).
-
----
 
 ## Schema shape
 
@@ -117,8 +111,6 @@ Use `key` for one-offs. Use `keys` when several settings share the same shape.
 | `numeric_slider` | Slider (supports display scaling / suffix) |
 | `keybind` | Rebindable input (also injected from the Input Map) |
 
----
-
 ## Extending the settings
 
 ### Edit the default schema
@@ -143,8 +135,6 @@ Add actions in **Project → Project Settings → Input Map**. The controls sect
 
 Use `exclude_prefixes` on that section if you want to hide engine/internal actions.
 
----
-
 ## Styling & customization
 
 The UI is intentionally simple: tabs, rows, and value editors. It is meant to get you running, not lock you into one look.
@@ -155,8 +145,6 @@ The UI is intentionally simple: tabs, rows, and value editors. It is meant to ge
 
 Use it as a drop-in if that is enough. Dig into the scenes and schema when you want something more game-specific.
 
----
-
 ## Default sections
 
 | Section    | Examples                                      |
@@ -165,8 +153,6 @@ Use it as a drop-in if that is enough. Dig into the scenes and schema when you w
 | Graphics   | Resolution, display mode, VSync, max FPS      |
 | Audio      | Master / music / SFX / UI volume              |
 | Controls   | Keybinds from your project's Input Map        |
-
----
 
 ## License
 
