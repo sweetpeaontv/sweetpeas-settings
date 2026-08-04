@@ -7,6 +7,9 @@ const _BasicValueEditors := preload(
 const _NumericSliderValueEditor := preload(
 	"res://addons/sweetpeas-settings/components/value-editors/numeric-slider/numeric-slider-value-editor.gd"
 )
+const _KeybindValueEditor := preload(
+	"res://addons/sweetpeas-settings/components/value-editors/keybind/keybind-value-editor.gd"
+)
 
 static var _editors: Dictionary = {}
 
@@ -34,4 +37,5 @@ static func _ensure_editors() -> void:
 		"spinbox": _BasicValueEditors.SpinboxValueEditor,
 		"toggle": _BasicValueEditors.ToggleValueEditor,
 		"numeric_slider": _NumericSliderValueEditor,
+		"keybind": _KeybindValueEditor,
 	}

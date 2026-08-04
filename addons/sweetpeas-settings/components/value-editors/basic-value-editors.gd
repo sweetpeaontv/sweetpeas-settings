@@ -51,6 +51,11 @@ class SliderValueEditor extends ValueEditor:
 	func set_value(value: Variant) -> void:
 		_slider.value = float(value)
 
+	func set_disabled(disabled: bool) -> void:
+		_slider.editable = not disabled
+		_min_label.modulate.a = 0.45 if disabled else 1.0
+		_max_label.modulate.a = 0.45 if disabled else 1.0
+
 	func _format_bound(value: float, step: float) -> String:
 		var snapped_value := snapped(value, step)
 		if step >= 1.0:
@@ -89,6 +94,9 @@ class OptionValueEditor extends ValueEditor:
 				_option_button.select(i)
 				break
 
+	func set_disabled(disabled: bool) -> void:
+		_option_button.disabled = disabled
+
 	func _on_item_selected(_index: int) -> void:
 		value_changed.emit(get_value())
 
@@ -122,6 +130,9 @@ class SpinboxValueEditor extends ValueEditor:
 	func set_value(value: Variant) -> void:
 		_spinbox.value = float(value)
 
+	func set_disabled(disabled: bool) -> void:
+		_spinbox.editable = not disabled
+
 	func _on_value_changed(value: float) -> void:
 		value_changed.emit(value)
 
@@ -144,6 +155,9 @@ class ToggleValueEditor extends ValueEditor:
 
 	func set_value(value: Variant) -> void:
 		_checkbox.button_pressed = bool(value)
+
+	func set_disabled(disabled: bool) -> void:
+		_checkbox.disabled = disabled
 
 	func _on_toggled(toggled: bool) -> void:
 		value_changed.emit(toggled)

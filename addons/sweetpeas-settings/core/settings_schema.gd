@@ -76,6 +76,24 @@ func settings_in(section_id: String) -> Array[Dictionary]:
 			return section["settings"]
 	return []
 
+# Appends a fully normalized setting into an existing section (used by settings_source injectors).
+# Returns false if the key already exists or the section is missing.
+func inject_setting(section_id: String, setting: Dictionary) -> bool:
+	var key := str(setting.get("key", "")).strip_edges()
+	if key.is_empty() or _by_key.has(key):
+		return false
+
+	for section in sections:
+		if section["id"] != section_id:
+			continue
+		setting["key"] = key
+		setting["section"] = section_id
+		_by_key[key] = setting
+		section["settings"].append(setting)
+		return true
+
+	return false
+
 # Values arrive from JSON and from UI controls that only speak float, so they are
 # pulled back to the type the schema's default declares.
 func coerce(key: String, value: Variant) -> Variant:
@@ -84,9 +102,12 @@ func coerce(key: String, value: Variant) -> Variant:
 		return value
 
 	var default_value: Variant = setting["default"]
+
+	if str(setting.get("type", "")) == "keybind":
+		return InputBinding.coerce(value, default_value)
+
 	var coerced: Variant = _to_type(value, typeof(default_value))
 
-	# verify the option is valid
 	if setting.has("options"):
 		return coerced if _is_valid_option(setting, coerced) else default_value
 
@@ -166,11 +187,79 @@ func _normalize_section(raw_section: Dictionary) -> Dictionary:
 			continue
 		settings.append_array(_normalize_entry(raw_entry, id))
 
-	return {
+	var section: Dictionary = {
 		"id": id,
 		"label": str(raw_section["label"]) if raw_section.has("label") else _humanize_id(id),
 		"settings": settings,
+		"header": _normalize_section_components(raw_section.get("header", []), id, "header"),
+		"footer": _normalize_section_components(raw_section.get("footer", []), id, "footer"),
 	}
+
+	if raw_section.has("settings_source"):
+		section["settings_source"] = str(raw_section["settings_source"]).strip_edges()
+
+	if raw_section.has("exclude_prefixes"):
+		section["exclude_prefixes"] = _normalize_string_list(raw_section["exclude_prefixes"])
+
+	return section
+
+# Accepts a string, an object with type, or an array of either:
+#   "control_header"
+#   { "type": "control_header" }
+#   ["control_header", { "type": "control_header" }]
+func _normalize_section_components(
+	raw: Variant,
+	section_id: String,
+	slot: String,
+) -> Array[Dictionary]:
+	var components: Array[Dictionary] = []
+	var entries: Array = raw if raw is Array else [raw]
+	for entry in entries:
+		var component := _normalize_section_component(entry, section_id, slot)
+		if not component.is_empty():
+			components.append(component)
+	return components
+
+func _normalize_section_component(
+	raw: Variant,
+	section_id: String,
+	slot: String,
+) -> Dictionary:
+	var component: Dictionary = {}
+	if raw is String or raw is StringName:
+		component = {"type": str(raw).strip_edges()}
+	elif raw is Dictionary:
+		component = (raw as Dictionary).duplicate(true)
+		component.erase("_comment")
+		component["type"] = str(component.get("type", "")).strip_edges()
+	else:
+		push_error(
+			"SweetPeas Settings: section '%s' %s entry must be a string or object."
+			% [section_id, slot]
+		)
+		return {}
+
+	if component["type"].is_empty():
+		push_error(
+			"SweetPeas Settings: section '%s' %s entry is missing 'type'."
+			% [section_id, slot]
+		)
+		return {}
+
+	return component
+
+func _normalize_string_list(raw: Variant) -> Array[String]:
+	var values: Array[String] = []
+	if raw is Array:
+		for item in raw:
+			var text: String = str(item).strip_edges()
+			if not text.is_empty():
+				values.append(text)
+	elif raw is String:
+		var text: String = raw.strip_edges()
+		if not text.is_empty():
+			values.append(text)
+	return values
 
 # "gameplay" -> "Gameplay", "my_section-name" -> "My Section Name"
 func _humanize_id(id: String) -> String:
@@ -235,25 +324,29 @@ func _normalize_setting(raw_setting: Dictionary, shared: Dictionary, section_id:
 
 	setting["key"] = key
 	setting["section"] = section_id
+	setting.erase("_comment")
 
-	# Optional override
 	if setting.has("label"):
 		setting["label"] = str(setting["label"])
 
 	if setting.has("options"):
 		setting["options"] = _normalize_options(setting["options"])
 
-	if not setting.has("default"):
-		var options: Array = setting.get("options", [])
-		if options.is_empty():
-			push_error("SweetPeas Settings: setting '%s' has no 'default'; skipping it." % key)
-			return {}
-		setting["default"] = options[0]["value"]
-
 	setting["type"] = str(setting.get("type", "")).strip_edges()
 	if setting["type"].is_empty():
 		push_error("SweetPeas Settings: setting '%s' has no 'type'; skipping it." % key)
 		return {}
+
+	if not setting.has("default"):
+		if setting["type"] == "keybind":
+			# Filled from the project Input Map in SettingSources.
+			setting["default"] = InputBinding.empty_binding()
+		else:
+			var options: Array = setting.get("options", [])
+			if options.is_empty():
+				push_error("SweetPeas Settings: setting '%s' has no 'default'; skipping it." % key)
+				return {}
+			setting["default"] = options[0]["value"]
 
 	return setting
 

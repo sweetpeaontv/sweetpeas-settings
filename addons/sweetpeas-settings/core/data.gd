@@ -21,6 +21,9 @@ func _init(schema: SettingsSchema) -> void:
 
 # VALUES
 #================================================================================#
+func has_key(key: String) -> bool:
+	return _schema.has_key(key)
+
 func get_value(key: String) -> Variant:
 	if _overrides.has(key):
 		return _overrides[key]
@@ -29,15 +32,21 @@ func get_value(key: String) -> Variant:
 # returns if value actually changed so UI can reflect that accordingly
 func set_value(key: String, value: Variant) -> bool:
 	var coerced: Variant = _schema.coerce(key, value)
-	if coerced == get_value(key):
+	var current: Variant = get_value(key)
+	if _values_equal(key, coerced, current):
 		return false
 
-	if coerced == _schema.default_for(key):
+	if _values_equal(key, coerced, _schema.default_for(key)):
 		_overrides.erase(key)
 	else:
 		_overrides[key] = coerced
 
 	return true
+
+func _values_equal(key: String, a: Variant, b: Variant) -> bool:
+	if str(_schema.get_setting(key).get("type", "")) == "keybind":
+		return InputBinding.same_binding(a, b)
+	return a == b
 #================================================================================#
 
 # RESET

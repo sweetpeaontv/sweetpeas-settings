@@ -6,7 +6,6 @@ extends Node
 signal setting_changed(key: String, value: Variant)
 
 const SAVE_DELAY_SECONDS := 0.5
-const LANGUAGE_KEY := "language"
 
 var schema: SettingsSchema
 var data: SettingsData
@@ -31,7 +30,8 @@ func _ready() -> void:
 	if data.sanitize_resolution():
 		_queue_save()
 
-	_apply_locale(get_setting(LANGUAGE_KEY))
+	SettingApplier.data = data
+	SettingApplier.apply_all()
 #================================================================================#
 
 # DESTRUCT
@@ -58,9 +58,7 @@ func set_setting(key: String, value: Variant, persist: bool = true) -> void:
 		return
 
 	var applied: Variant = data.get_value(key)
-	if key == LANGUAGE_KEY:
-		_apply_locale(applied)
-
+	SettingApplier.apply(key, applied)
 	setting_changed.emit(key, applied)
 	if persist:
 		_queue_save()
@@ -70,6 +68,12 @@ func reset_section(section_id: String) -> void:
 
 func reset_all() -> void:
 	_announce(data.reset_all())
+
+func register_applier(key: String, callable: Callable) -> void:
+	SettingApplier.register(key, callable)
+
+func unregister_applier(key: String) -> void:
+	SettingApplier.unregister(key)
 
 func flush(wait: bool = false) -> void:
 	_save_timer.stop()
@@ -85,20 +89,11 @@ func flush(wait: bool = false) -> void:
 func _announce(changed_keys: PackedStringArray) -> void:
 	for key in changed_keys:
 		var value: Variant = data.get_value(key)
-		if key == LANGUAGE_KEY:
-			_apply_locale(value)
+		SettingApplier.apply(key, value)
 		setting_changed.emit(key, value)
 
 	if not changed_keys.is_empty():
 		_queue_save()
-
-func _apply_locale(locale: Variant) -> void:
-	if locale == null:
-		return
-	var code := str(locale).strip_edges()
-	if code.is_empty():
-		return
-	TranslationServer.set_locale(code)
 
 func _queue_save() -> void:
 	_dirty = true

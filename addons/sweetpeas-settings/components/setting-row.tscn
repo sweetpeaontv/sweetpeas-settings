@@ -9,9 +9,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
+theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_bottom = 4
 script = ExtResource("1_snqwp")
 
 [node name="SettingRowContainer" type="HBoxContainer" parent="." unique_id=1001067275]
@@ -23,6 +23,9 @@ size_flags_horizontal = 3
 
 [node name="Label" type="Label" parent="SettingRowContainer/NameContainer" unique_id=1838741489]
 layout_mode = 2
+size_flags_horizontal = 3
+clip_text = true
+text_overrun_behavior = 3
 
 [node name="SpreadContainer" type="HBoxContainer" parent="SettingRowContainer" unique_id=152524002]
 layout_mode = 2
@@ -30,5 +33,7 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.0
 
 [node name="ValueEditorContainer" type="HBoxContainer" parent="SettingRowContainer" unique_id=204625210]
+custom_minimum_size = Vector2(152, 0)
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.0

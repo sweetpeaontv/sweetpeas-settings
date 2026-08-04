@@ -26,8 +26,62 @@ const _FALLBACK_SIZE := Vector2i(1920, 1080)
 # APPLY
 #================================================================================#
 static func apply(schema: SettingsSchema) -> void:
+	_inject_section_sources(schema)
+
 	for key in schema.keys():
 		_apply_setting(schema.get_setting(key))
+
+	_fill_keybind_defaults(schema)
+
+static func _inject_section_sources(schema: SettingsSchema) -> void:
+	for section in schema.sections:
+		match str(section.get("settings_source", "")):
+			"":
+				continue
+			"input_map":
+				_inject_input_map(schema, section)
+			_:
+				push_warning(
+					"SweetPeas Settings: unknown settings_source '%s' on section '%s'."
+					% [section.get("settings_source"), section.get("id")]
+				)
+
+static func _inject_input_map(schema: SettingsSchema, section: Dictionary) -> void:
+	var section_id := str(section.get("id", ""))
+	var exclude_prefixes: Array = section.get("exclude_prefixes", [])
+	var actions: Array = InputMap.get_actions()
+	actions.sort()
+
+	for action in actions:
+		var name := str(action)
+		if _excluded_by_prefix(name, exclude_prefixes):
+			continue
+		if schema.has_key(name):
+			continue
+
+		schema.inject_setting(section_id, {
+			"key": name,
+			"type": "keybind",
+			"default": InputBinding.snapshot_action(action),
+			"section": section_id,
+		})
+
+static func _excluded_by_prefix(action_name: String, prefixes: Array) -> bool:
+	for prefix in prefixes:
+		if action_name.begins_with(str(prefix)):
+			return true
+	return false
+
+static func _fill_keybind_defaults(schema: SettingsSchema) -> void:
+	for key in schema.keys():
+		var setting := schema.get_setting(key)
+		if str(setting.get("type", "")) != "keybind":
+			continue
+
+		if InputMap.has_action(key):
+			setting["default"] = InputBinding.snapshot_action(StringName(key))
+
+		SettingApplier.register(key, SettingApplier._apply_keybind)
 
 static func _apply_setting(setting: Dictionary) -> void:
 	if setting.has(OPTIONS_SOURCE):

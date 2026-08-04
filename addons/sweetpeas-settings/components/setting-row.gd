@@ -7,6 +7,7 @@ var _editor_container: HBoxContainer
 
 var _setting: Dictionary = {}
 var _editor: ValueEditor
+var _disabled := false
 
 # INIT
 #================================================================================#
@@ -15,6 +16,7 @@ func setup(setting: Dictionary, initial_value: Variant = null) -> void:
 	_resolve_nodes()
 	_apply_label()
 	_mount_editor(initial_value)
+	_apply_disabled()
 
 func _resolve_nodes() -> void:
 	if _label != null:
@@ -56,6 +58,10 @@ func set_value(value: Variant) -> void:
 	if _editor:
 		_editor.set_value(value)
 
+func set_disabled(disabled: bool) -> void:
+	_disabled = disabled
+	_apply_disabled()
+
 func refresh_locale() -> void:
 	_apply_label()
 	if _editor == null:
@@ -64,12 +70,20 @@ func refresh_locale() -> void:
 	_editor.setup(_setting)
 	if current != null:
 		_editor.set_value(current)
+	
+	# defensive application of disabled state upon refresh
+	_apply_disabled()
 #================================================================================#
 
 # INTERNAL
 #================================================================================#
 func _apply_label() -> void:
 	_label.text = tr(str(_setting.get("label", _setting.get("key", ""))))
+
+func _apply_disabled() -> void:
+	_label.modulate.a = 0.45 if _disabled else 1.0
+	if _editor:
+		_editor.set_disabled(_disabled)
 
 func _on_editor_value_changed(value: Variant) -> void:
 	value_changed.emit(value)
