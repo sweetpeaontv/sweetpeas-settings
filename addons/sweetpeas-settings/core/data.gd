@@ -1,148 +1,124 @@
 # data.gd
-# Resource subclass representing the full settings schema.
-# Handles defaults, serialization, and save/load.
 class_name SettingsData
-extends Resource
+extends RefCounted
 
 const SAVE_PATH: String = "user://settings.json"
 
-enum Section { GAMEPLAY, GRAPHICS, AUDIO, CONTROLS }
+# schema and player selected values are stored separately in order to preserve default values as defaults and not player decisions.
+# if instead we stored the data in 1 dict, then any value that a player does not change is treated as their decision
+# meaning if the setting changes later, it will not reflect the new default value, but instead a value the player never touched.
+var _schema: SettingsSchema
+var _overrides: Dictionary = {}
 
-# GAMEPLAY
-#================================================================================#
-@export var language: String = "en"
-@export var sensitivity: float = 1.0
-#================================================================================#
+# Save I/O runs on WorkerThreadPool
+# Generation + mutex keep overlapping writes from finishing out of order and clobbering a newer snapshot.
+var _write_mutex := Mutex.new()
+var _save_generation: int = 0
+var _pending_task_ids: Array[int] = []
 
-# GRAPHICS
-#================================================================================#
-enum DisplayMode { WINDOWED, BORDERLESS, FULLSCREEN }
-@export var display_mode: DisplayMode = DisplayMode.WINDOWED
-@export var resolution: Vector2i = Vector2i(1920, 1080)
-@export var vsync: bool = false
-@export var max_fps: int = 60
-#================================================================================#
+func _init(schema: SettingsSchema) -> void:
+	_schema = schema
 
-# AUDIO
+# VALUES
 #================================================================================#
-@export var master_volume: float = 0.1
-@export var music_volume: float = 0.1
-@export var sfx_volume: float = 0.1
-@export var ui_volume: float = 0.1
-#================================================================================#
+func get_value(key: String) -> Variant:
+	if _overrides.has(key):
+		return _overrides[key]
+	return _schema.default_for(key)
 
-# CONTROLS
-#================================================================================#
-@export var input_bindings: Dictionary = {}
-#================================================================================#
+# returns if value actually changed so UI can reflect that accordingly
+func set_value(key: String, value: Variant) -> bool:
+	var coerced: Variant = _schema.coerce(key, value)
+	if coerced == get_value(key):
+		return false
 
-# SAVE/LOAD
-#================================================================================#
-func _setting_names() -> PackedStringArray:
-	var names: PackedStringArray = []
-	for prop in get_property_list():
-		if prop.usage & PROPERTY_USAGE_SCRIPT_VARIABLE:
-			names.append(prop.name)
-	return names
+	if coerced == _schema.default_for(key):
+		_overrides.erase(key)
+	else:
+		_overrides[key] = coerced
 
-func to_dict() -> Dictionary:
-	var dict: Dictionary = {}
-	for prop_name in _setting_names():
-		dict[prop_name] = _to_json_value(get(prop_name))
-	return dict
-
-func from_dict(dict: Dictionary) -> void:
-	for prop_name in _setting_names():
-		if dict.has(prop_name):
-			set(prop_name, _from_json_value(get(prop_name), dict[prop_name]))
-
-static func load_or_create() -> SettingsData:
-	var data := SettingsData.new()
-	if FileAccess.file_exists(SAVE_PATH):
-		var text := FileAccess.get_file_as_string(SAVE_PATH)
-		var parsed: Variant = JSON.parse_string(text)
-		if parsed is Dictionary:
-			data.from_dict(parsed)
-	return data
-
-func save() -> void:
-	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
-	if file == null:
-		push_error("SweetPeas Settings: failed to open '%s' for writing." % SAVE_PATH)
-		return
-	file.store_string(JSON.stringify(to_dict(), "\t"))
-#================================================================================#
-
-# JSON TYPE CONVERSION
-#================================================================================#
-# JSON only supports null, bool, number, String, Array and Dictionary. Non-native
-# types (vectors, etc.) are encoded as dictionaries with named components so the
-# file stays clean and human-editable.
-func _to_json_value(value: Variant) -> Variant:
-	match typeof(value):
-		TYPE_VECTOR2I, TYPE_VECTOR2:
-			return {"x": value.x, "y": value.y}
-		TYPE_VECTOR3I, TYPE_VECTOR3:
-			return {"x": value.x, "y": value.y, "z": value.z}
-		_:
-			return value
-
-# Converts a parsed JSON value back into the type of the existing property.
-# `current` is the property's present value, used only as a type reference; it is
-# also returned unchanged when the stored value is malformed, so a corrupt entry
-# falls back to the default instead of crashing.
-func _from_json_value(current: Variant, value: Variant) -> Variant:
-	match typeof(current):
-		TYPE_VECTOR2I:
-			if value is Dictionary and value.has("x") and value.has("y"):
-				return Vector2i(int(value["x"]), int(value["y"]))
-			return current
-		TYPE_VECTOR2:
-			if value is Dictionary and value.has("x") and value.has("y"):
-				return Vector2(value["x"], value["y"])
-			return current
-		TYPE_VECTOR3I:
-			if value is Dictionary and value.has("x") and value.has("y") and value.has("z"):
-				return Vector3i(int(value["x"]), int(value["y"]), int(value["z"]))
-			return current
-		TYPE_VECTOR3:
-			if value is Dictionary and value.has("x") and value.has("y") and value.has("z"):
-				return Vector3(value["x"], value["y"], value["z"])
-			return current
-		TYPE_INT:
-			return int(value)
-	return value
+	return true
 #================================================================================#
 
 # RESET
 #================================================================================#
-func reset_to_defaults() -> void:
-	var defaults := SettingsData.new()
-	_copy_from(defaults)
+func reset_section(section_id: String) -> PackedStringArray:
+	var changed_keys: PackedStringArray = []
+	for setting in _schema.settings_in(section_id):
+		if _overrides.erase(setting["key"]):
+			changed_keys.append(setting["key"])
+	return changed_keys
 
-func reset_section(section: Section) -> void:
-	var defaults: SettingsData = SettingsData.new()
-	match section:
-		Section.GAMEPLAY:
-			language = defaults.language
-			sensitivity = defaults.sensitivity
-		Section.GRAPHICS:
-			display_mode = defaults.display_mode
-			resolution = defaults.resolution
-			vsync = defaults.vsync
-			max_fps = defaults.max_fps
-		Section.AUDIO:
-			master_volume = defaults.master_volume
-			music_volume = defaults.music_volume
-			sfx_volume = defaults.sfx_volume
-			ui_volume = defaults.ui_volume
-		Section.CONTROLS:
-			input_bindings = defaults.input_bindings
+func reset_all() -> PackedStringArray:
+	var changed_keys := PackedStringArray(_overrides.keys())
+	_overrides.clear()
+	return changed_keys
 #================================================================================#
 
-# HELPERS
+# SAVE/LOAD
 #================================================================================#
-func _copy_from(other: SettingsData) -> void:
-	for prop_name in _setting_names():
-		set(prop_name, other.get(prop_name))
+static func load_or_create(schema: SettingsSchema) -> SettingsData:
+	var data := SettingsData.new(schema)
+	if FileAccess.file_exists(SAVE_PATH):
+		data._read()
+	return data
+
+func save() -> void:
+	_drain_completed_saves()
+
+	var snapshot: Dictionary = _overrides.duplicate(true)
+	_write_mutex.lock()
+	_save_generation += 1
+	var generation := _save_generation
+	_write_mutex.unlock()
+
+	var task_id := WorkerThreadPool.add_task(
+		_write_snapshot.bind(snapshot, generation),
+		false,
+		"SweetPeas Settings: save"
+	)
+	_pending_task_ids.append(task_id)
+
+# Blocks until every queued save has finished. Required on quit so the last
+# write is not cut off, and so WorkerThreadPool can reclaim task resources.
+func wait_for_saves() -> void:
+	for task_id in _pending_task_ids:
+		WorkerThreadPool.wait_for_task_completion(task_id)
+	_pending_task_ids.clear()
+
+func _drain_completed_saves() -> void:
+	var still_pending: Array[int] = []
+	for task_id in _pending_task_ids:
+		if WorkerThreadPool.is_task_completed(task_id):
+			WorkerThreadPool.wait_for_task_completion(task_id)
+		else:
+			still_pending.append(task_id)
+	_pending_task_ids = still_pending
+
+func _write_snapshot(snapshot: Dictionary, generation: int) -> void:
+	_write_mutex.lock()
+	if generation != _save_generation:
+		_write_mutex.unlock()
+		return
+
+	# rewrites entire file
+	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	if file == null:
+		push_error("SweetPeas Settings: failed to open '%s' for writing." % SAVE_PATH)
+		_write_mutex.unlock()
+		return
+
+	file.store_string(JSON.stringify(snapshot, "\t"))
+	_write_mutex.unlock()
+
+# runs once on startup, no need for worker pool
+func _read() -> void:
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(SAVE_PATH))
+	if not parsed is Dictionary:
+		push_error("SweetPeas Settings: '%s' is unreadable; using defaults." % SAVE_PATH)
+		return
+
+	for key in parsed:
+		if _schema.has_key(key):
+			set_value(key, parsed[key])
 #================================================================================#
