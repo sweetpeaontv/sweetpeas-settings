@@ -2,15 +2,14 @@
 
 An open source, drop-in settings menu for Godot games.
 
-It ships with the settings most games already need — language, sensitivity, resolution, display mode, VSync, FPS cap, volume sliders, and keybinds — and is built to be extended. Use it as-is to get a working menu quickly, or treat it as a jumping-off point and reshape it for your project.
+Ships with basic settings most games need and is built to be extended. Drop it straight into your game or treat it as a jumping-off point to restructure for your specific needs.
 
 ## Features
 
 - **Ready-made defaults** for gameplay, graphics, audio, and controls
-- **Schema-driven UI** — settings are defined in JSON, not hardcoded
-- **Automatic keybinds** — Input Map actions are parsed into editable bindings
-- **Simple, themeable UI** — style it with Godot themes, or swap/edit the scenes yourself
-- **Autoload on enable** — enabling the plugin registers `SettingsManager` for you
+- **Schema-driven UI** — settings are defined in JSON, not hardcoded. Add additional settings with a few lines.
+- **Automatic keybinds** — Input Map actions are automatically parsed into editable bindings.
+- **Simple, themeable UI** — style it with Godot themes, or swap/edit the components yourself
 
 ## Installation
 
@@ -153,6 +152,10 @@ Use it as a drop-in if that is enough. Dig into the scenes and schema when you w
 | Graphics   | Resolution, display mode, VSync, max FPS      |
 | Audio      | Master / music / SFX / UI volume              |
 | Controls   | Keybinds from your project's Input Map        |
+
+## Progress
+
+I intend to maintain and update this repo when necessary. Don't expect regular or timely updates.
 
 ## License
 
