@@ -10,8 +10,8 @@ const SAVE_PATH: String = "user://settings.json"
 var _schema: SettingsSchema
 var _overrides: Dictionary = {}
 
-# Save I/O runs on WorkerThreadPool
-# Generation + mutex keep overlapping writes from finishing out of order and clobbering a newer snapshot.
+# save i/o runs on WorkerThreadPool
+# generation + mutex keep overlapping writes from finishing out of order and trumping a newer snapshot.
 var _write_mutex := Mutex.new()
 var _save_generation: int = 0
 var _pending_task_ids: Array[int] = []
@@ -53,6 +53,27 @@ func reset_all() -> PackedStringArray:
 	var changed_keys := PackedStringArray(_overrides.keys())
 	_overrides.clear()
 	return changed_keys
+
+# Drops a saved resolution that is no longer offered or no longer fits any
+# connected display, so the player falls back to the primary-screen default.
+func sanitize_resolution() -> bool:
+	const RESOLUTION_KEY := "resolution"
+	if not _overrides.has(RESOLUTION_KEY) or not _schema.has_key(RESOLUTION_KEY):
+		return false
+
+	var value := str(_overrides[RESOLUTION_KEY])
+	var setting := _schema.get_setting(RESOLUTION_KEY)
+	var in_options := false
+	for option in setting.get("options", []):
+		if option is Dictionary and str(option.get("value")) == value:
+			in_options = true
+			break
+
+	if in_options and SettingSources.resolution_fits_screens(value):
+		return false
+
+	_overrides.erase(RESOLUTION_KEY)
+	return true
 #================================================================================#
 
 # SAVE/LOAD

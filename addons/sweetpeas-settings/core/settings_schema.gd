@@ -29,6 +29,7 @@ static func load_schema() -> SettingsSchema:
 		return schema
 
 	schema._build(parsed)
+	SettingSources.apply(schema)
 	return schema
 
 static func resolve_path() -> String:
@@ -141,7 +142,9 @@ func suggest_key(key: String) -> String:
 #================================================================================#
 # Everything below validates what an author wrote and fills in the parts that can
 # be spelled out for them, so the rest of the addon can assume a complete setting:
-# a key, a label, a type, a default, and options that are always {value, label}.
+# a key, a type, a default, and options that are always {value, label}.
+# Setting display text is tr(key) unless an optional label override is set.
+# Section labels are humanized from id (my_section -> My Section) unless overridden.
 func _build(raw_schema: Dictionary) -> void:
 	for raw_section in raw_schema.get("sections", []):
 		if not raw_section is Dictionary:
@@ -165,12 +168,19 @@ func _normalize_section(raw_section: Dictionary) -> Dictionary:
 
 	return {
 		"id": id,
-		"label": str(raw_section.get("label", id.capitalize())),
+		"label": str(raw_section["label"]) if raw_section.has("label") else _humanize_id(id),
 		"settings": settings,
 	}
 
-# A settings entry is either one setting ("key") or a batch ("keys"). Batches
-# expand into one resolved setting per item, then disappear from the tree.
+# "gameplay" -> "Gameplay", "my_section-name" -> "My Section Name"
+func _humanize_id(id: String) -> String:
+	var words := id.replace("-", " ").replace("_", " ").split(" ", false)
+	for i in words.size():
+		words[i] = str(words[i]).capitalize()
+	return " ".join(words)
+
+# A settings entry is either one setting ("key") or a batch ("keys"). 
+# Batches expand into one resolved setting per item, then disappear from the tree.
 func _normalize_entry(raw_entry: Dictionary, section_id: String) -> Array[Dictionary]:
 	if raw_entry.has(KEYS_FIELD):
 		var shared := raw_entry.duplicate(true)
@@ -225,7 +235,10 @@ func _normalize_setting(raw_setting: Dictionary, shared: Dictionary, section_id:
 
 	setting["key"] = key
 	setting["section"] = section_id
-	setting["label"] = str(setting.get("label", key.capitalize()))
+
+	# Optional override
+	if setting.has("label"):
+		setting["label"] = str(setting["label"])
 
 	if setting.has("options"):
 		setting["options"] = _normalize_options(setting["options"])

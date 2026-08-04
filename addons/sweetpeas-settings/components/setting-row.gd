@@ -13,7 +13,7 @@ var _editor: ValueEditor
 func setup(setting: Dictionary, initial_value: Variant = null) -> void:
 	_setting = setting
 	_resolve_nodes()
-	_label.text = setting.get("label", setting.get("key", ""))
+	_apply_label()
 	_mount_editor(initial_value)
 
 func _resolve_nodes() -> void:
@@ -55,10 +55,22 @@ func get_value() -> Variant:
 func set_value(value: Variant) -> void:
 	if _editor:
 		_editor.set_value(value)
+
+func refresh_locale() -> void:
+	_apply_label()
+	if _editor == null:
+		return
+	var current: Variant = _editor.get_value()
+	_editor.setup(_setting)
+	if current != null:
+		_editor.set_value(current)
 #================================================================================#
 
-# SIGNAL HANDLERS
+# INTERNAL
 #================================================================================#
+func _apply_label() -> void:
+	_label.text = tr(str(_setting.get("label", _setting.get("key", ""))))
+
 func _on_editor_value_changed(value: Variant) -> void:
 	value_changed.emit(value)
 #================================================================================#

@@ -6,6 +6,7 @@ extends Node
 signal setting_changed(key: String, value: Variant)
 
 const SAVE_DELAY_SECONDS := 0.5
+const LANGUAGE_KEY := "language"
 
 var schema: SettingsSchema
 var data: SettingsData
@@ -16,14 +17,21 @@ var _dirty := false
 # INIT
 #================================================================================#
 func _ready() -> void:
-	schema = SettingsSchema.load_schema()
-	data = SettingsData.load_or_create(schema)
-
 	_save_timer = Timer.new()
 	_save_timer.one_shot = true
 	_save_timer.wait_time = SAVE_DELAY_SECONDS
 	_save_timer.timeout.connect(flush)
 	add_child(_save_timer)
+
+	SettingsI18n.load_translations()
+
+	schema = SettingsSchema.load_schema()
+	data = SettingsData.load_or_create(schema)
+
+	if data.sanitize_resolution():
+		_queue_save()
+
+	_apply_locale(get_setting(LANGUAGE_KEY))
 #================================================================================#
 
 # DESTRUCT
@@ -49,7 +57,11 @@ func set_setting(key: String, value: Variant, persist: bool = true) -> void:
 	if not data.set_value(key, value):
 		return
 
-	setting_changed.emit(key, data.get_value(key))
+	var applied: Variant = data.get_value(key)
+	if key == LANGUAGE_KEY:
+		_apply_locale(applied)
+
+	setting_changed.emit(key, applied)
 	if persist:
 		_queue_save()
 
@@ -72,10 +84,21 @@ func flush(wait: bool = false) -> void:
 #================================================================================#
 func _announce(changed_keys: PackedStringArray) -> void:
 	for key in changed_keys:
-		setting_changed.emit(key, data.get_value(key))
+		var value: Variant = data.get_value(key)
+		if key == LANGUAGE_KEY:
+			_apply_locale(value)
+		setting_changed.emit(key, value)
 
 	if not changed_keys.is_empty():
 		_queue_save()
+
+func _apply_locale(locale: Variant) -> void:
+	if locale == null:
+		return
+	var code := str(locale).strip_edges()
+	if code.is_empty():
+		return
+	TranslationServer.set_locale(code)
 
 func _queue_save() -> void:
 	_dirty = true

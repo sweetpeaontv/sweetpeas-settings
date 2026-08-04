@@ -7,12 +7,13 @@
 				{
 					"key": "language",
 					"type": "option",
+					"options_source": "project_locales",
+					"default_source": "system_locale",
 					"default": "en",
-					"options": { "English": "en", "Spanish": "es" }
+					"options": { "English": "en" }
 				},
 				{
 					"key": "sensitivity",
-					"label": "Mouse Sensitivity",
 					"type": "slider",
 					"default": 1.0,
 					"min": 0.1,
@@ -27,6 +28,8 @@
 				{
 					"key": "resolution",
 					"type": "option",
+					"options_source": "display_resolutions",
+					"default_source": "primary_resolution",
 					"default": "1920x1080",
 					"options": ["1920x1080", "1280x720"]
 				},
@@ -34,17 +37,19 @@
 					"key": "display_mode",
 					"type": "option",
 					"default": 0,
-					"options": { "Windowed": 0, "Borderless": 1, "Fullscreen": 2 }
+					"options": {
+						"display_mode_windowed": 0,
+						"display_mode_borderless": 1,
+						"display_mode_fullscreen": 2
+					}
 				},
 				{
 					"key": "vsync",
-					"label": "VSync",
 					"type": "toggle",
 					"default": false
 				},
 				{
 					"key": "max_fps",
-					"label": "Max FPS",
 					"type": "spinbox",
 					"default": 60,
 					"min": 30,

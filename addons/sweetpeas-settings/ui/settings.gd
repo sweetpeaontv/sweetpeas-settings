@@ -7,6 +7,7 @@ extends VBoxContainer
 var _active_tab := 0
 var _panels: Array[Control] = []
 var _rows: Dictionary = {}
+var _sections: Array[Dictionary] = []
 
 const SETTING_ROW := preload("res://addons/sweetpeas-settings/components/setting-row.tscn")
 const SETTINGS_PANEL := preload("res://addons/sweetpeas-settings/components/settings-panel.tscn")
@@ -24,10 +25,11 @@ func _ready() -> void:
 	_on_tab_changed(0)
 
 func _build_section(section: Dictionary) -> void:
-	tab_bar.add_tab(section["label"])
+	_sections.append(section)
+	tab_bar.add_tab(_section_title(section))
 
 	var panel := SETTINGS_PANEL.instantiate()
-	panel.name = section["label"] + "SettingsPanel"
+	panel.name = str(section["id"]) + "SettingsPanel"
 	var container: VBoxContainer = panel.get_node("ScrollContainer/VBoxContainer")
 
 	for setting in section["settings"]:
@@ -43,14 +45,27 @@ func _build_section(section: Dictionary) -> void:
 	_panels.append(panel)
 	panel.hide()
 
-# Bound arguments arrive after the signal's own, so the value comes first.
 func _on_row_value_changed(value: Variant, key: String) -> void:
 	SettingsManager.set_setting(key, value)
 
-# Keeps rows in step with changes made elsewhere, such as a reset.
 func _on_setting_changed(key: String, value: Variant) -> void:
+	if key == "language":
+		_refresh_localized_text()
 	if _rows.has(key):
 		_rows[key].set_value(value)
+
+func _refresh_localized_text() -> void:
+	for index in _sections.size():
+		tab_bar.set_tab_title(index, _section_title(_sections[index]))
+	for key in _rows:
+		_rows[key].refresh_locale()
+
+func _section_title(section: Dictionary) -> String:
+	var id := str(section.get("id", ""))
+	var translated := tr(id)
+	if translated != id:
+		return translated
+	return str(section.get("label", id))
 
 func _on_tab_changed(idx: int) -> void:
 	_panels[_active_tab].hide()

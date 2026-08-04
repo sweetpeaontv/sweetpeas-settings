@@ -75,7 +75,7 @@ class OptionValueEditor extends ValueEditor:
 		_option_button.clear()
 		for opt in setting.get("options", []):
 			if opt is Dictionary:
-				_option_button.add_item(String(opt.get("label", "")), -1)
+				_option_button.add_item(tr(String(opt.get("label", ""))), -1)
 				_option_button.set_item_metadata(_option_button.item_count - 1, opt.get("value"))
 
 	func get_value() -> Variant:

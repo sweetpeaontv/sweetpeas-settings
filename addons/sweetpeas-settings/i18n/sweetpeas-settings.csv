@@ -1,0 +1,18 @@
+keys,en
+gameplay,Gameplay
+graphics,Graphics
+audio,Audio
+controls,Controls
+language,Language
+sensitivity,Mouse Sensitivity
+resolution,Resolution
+display_mode,Display Mode
+vsync,VSync
+max_fps,Max FPS
+master_volume,Master Volume
+music_volume,Music Volume
+sfx_volume,SFX Volume
+ui_volume,UI Volume
+display_mode_windowed,Windowed
+display_mode_borderless,Borderless
+display_mode_fullscreen,Fullscreen
