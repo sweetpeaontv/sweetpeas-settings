@@ -19,13 +19,28 @@ Ships with basic settings most games need and is built to be extended. Drop it s
 2. Copy `addons/sweetpeas-settings` into your project's `addons/` folder
 3. In **Project → Project Settings → Plugins**, enable **Sweetpea's Settings**
 
-### From the Asset Library
+### From the Asset Store
 
-1. Open **AssetLib** in the Godot editor
+1. Open **AssetStore** in the Godot editor
 2. Search for **Sweetpea's Settings**
 3. Download and install, then enable the plugin under **Project → Project Settings → Plugins**
 
 Once enabled, the plugin adds the `SettingsManager` autoload. Instance `res://addons/sweetpeas-settings/ui/settings.tscn` wherever you want the menu (pause screen, options button, etc.).
+
+### Project setup notes
+
+**Autoload order.** Keep `SettingsManager` as the **last** autoload. On boot it applies all settings once; if your own autoloads need to `register_applier` for custom keys, they should do that in `_ready` *before* `SettingsManager` runs. Putting it last makes that timing reliable.
+
+**Audio buses.** The default volume settings push into Godot's `AudioServer` by bus name:
+
+| Setting key | Bus name |
+|-------------|----------|
+| `master_volume` | `Master` |
+| `music_volume` | `Music` |
+| `sfx_volume` | `SFX` |
+| `ui_volume` | `UI` |
+
+`Master` exists by default. Add `Music`, `SFX`, and `UI` under **Project → Project Settings → Audio → Buses** (or the Audio bus editor) if you use those sliders — missing buses are skipped with a warning.
 
 ## Schema shape
 
@@ -160,3 +175,5 @@ I intend to maintain and update this repo when necessary. Don't expect regular o
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+Keybind prompt icons are from [Kenney's Input Prompts](https://kenney.nl/assets/input-prompts) (CC0). See `addons/sweetpeas-settings/licenses/third-party/kenney-input-prompts.txt`.

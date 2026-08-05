@@ -8,6 +8,8 @@ var _active_tab := 0
 var _panels: Array[Control] = []
 var _rows: Dictionary = {}
 var _sections: Array[Dictionary] = []
+# section_id -> header/footer controls from the schema
+var _section_components: Dictionary = {}
 
 const SETTING_ROW := preload("res://addons/sweetpeas-settings/components/setting-row.tscn")
 const SETTINGS_PANEL := preload("res://addons/sweetpeas-settings/components/settings-panel.tscn")
@@ -32,11 +34,14 @@ func _build_section(section: Dictionary) -> void:
 	var panel := SETTINGS_PANEL.instantiate()
 	panel.name = str(section["id"]) + "SettingsPanel"
 	var container: VBoxContainer = panel.get_node("ScrollContainer/VBoxContainer")
+	var section_id: String = section["id"]
+	var slot_controls: Array[Control] = []
 
 	var header_controls := _create_section_components(section.get("header", []))
 	_append_section_components(container, header_controls)
 	if not header_controls.is_empty():
 		container.add_child(HSeparator.new())
+	slot_controls.append_array(header_controls)
 
 	var settings: Array = section["settings"]
 	for i in settings.size():
@@ -56,6 +61,10 @@ func _build_section(section: Dictionary) -> void:
 	if not footer_controls.is_empty():
 		container.add_child(HSeparator.new())
 		_append_section_components(container, footer_controls)
+	slot_controls.append_array(footer_controls)
+
+	_section_components[section_id] = slot_controls
+	_wire_section_reset_footers(section_id, footer_controls)
 
 	body.add_child(panel)
 	_panels.append(panel)
@@ -78,8 +87,17 @@ func _append_section_components(container: VBoxContainer, controls: Array[Contro
 		if i < controls.size() - 1:
 			container.add_child(HSeparator.new())
 
+func _wire_section_reset_footers(section_id: String, footer_controls: Array[Control]) -> void:
+	for control in footer_controls:
+		if not control.has_signal("reset_requested"):
+			continue
+		control.connect("reset_requested", _on_section_reset_requested.bind(section_id))
+
 func _on_row_value_changed(value: Variant, key: String) -> void:
 	SettingsManager.set_setting(key, value)
+
+func _on_section_reset_requested(section_id: String) -> void:
+	SettingsManager.reset_section(section_id)
 
 func _on_setting_changed(key: String, value: Variant) -> void:
 	if key == "language":
@@ -93,6 +111,10 @@ func _refresh_localized_text() -> void:
 		tab_bar.set_tab_title(index, _section_title(_sections[index]))
 	for key in _rows:
 		_rows[key].refresh_locale()
+	for section_id in _section_components:
+		for control in _section_components[section_id]:
+			if control.has_method("refresh_locale"):
+				control.refresh_locale()
 
 func _refresh_disabled_states() -> void:
 	for key in _rows:

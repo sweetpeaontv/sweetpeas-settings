@@ -22,7 +22,8 @@
 					"max": 5.0,
 					"step": 0.1
 				}
-			]
+			],
+			"footer": ["section_reset"]
 		},
 		{
 			"id": "graphics",
@@ -64,7 +65,8 @@
 					"max": 240.0,
 					"step": 1.0
 				}
-			]
+			],
+			"footer": ["section_reset"]
 		},
 		{
 			"id": "audio",
@@ -84,17 +86,19 @@
 						"ui_volume"
 					]
 				}
-			]
+			],
+			"footer": ["section_reset"]
 		},
 		{
 			"id": "controls",
 			"_comment": "Keybind defaults come from Project Settings Input Map. settings_source injects actions at load.",
 			"settings_source": "input_map",
-			"exclude_prefixes": [],
+			"exclude_prefixes": ["ui_"],
+			"settings": [],
 			"header": [
 				"control_header"
 			],
-			"settings": []
+			"footer": ["section_reset"]
 		}
 	]
 }

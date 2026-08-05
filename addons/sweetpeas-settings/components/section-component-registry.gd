@@ -4,6 +4,9 @@ extends RefCounted
 const _CONTROL_HEADER := preload(
 	"res://addons/sweetpeas-settings/components/control-header.tscn"
 )
+const _SECTION_RESET := preload(
+	"res://addons/sweetpeas-settings/components/section-reset-button.tscn"
+)
 
 static var _components: Dictionary = {}
 
@@ -12,7 +15,7 @@ static func create(type: String) -> Control:
 
 	var scene: Variant = _components.get(type)
 	if scene == null:
-		push_error("SweetPeas Settings: unknown section component '%s'" % type)
+		push_error("Sweetpea's Settings: unknown section component '%s'" % type)
 		return null
 
 	return scene.instantiate() as Control
@@ -27,4 +30,5 @@ static func _ensure_components() -> void:
 
 	_components = {
 		"control_header": _CONTROL_HEADER,
+		"section_reset": _SECTION_RESET,
 	}

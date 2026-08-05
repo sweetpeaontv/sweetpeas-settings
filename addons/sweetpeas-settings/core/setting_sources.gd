@@ -42,7 +42,7 @@ static func _inject_section_sources(schema: SettingsSchema) -> void:
 				_inject_input_map(schema, section)
 			_:
 				push_warning(
-					"SweetPeas Settings: unknown settings_source '%s' on section '%s'."
+					"Sweetpea's Settings: unknown settings_source '%s' on section '%s'."
 					% [section.get("settings_source"), section.get("id")]
 				)
 
@@ -110,7 +110,7 @@ static func _options_for(source: String) -> Array[Dictionary]:
 		"project_locales":
 			return _project_locales()
 		_:
-			push_warning("SweetPeas Settings: unknown options_source '%s'." % source)
+			push_warning("Sweetpea's Settings: unknown options_source '%s'." % source)
 			return []
 
 static func _default_for(source: String, setting: Dictionary) -> Variant:
@@ -120,7 +120,7 @@ static func _default_for(source: String, setting: Dictionary) -> Variant:
 		"system_locale":
 			return _system_locale(setting)
 		_:
-			push_warning("SweetPeas Settings: unknown default_source '%s'." % source)
+			push_warning("Sweetpea's Settings: unknown default_source '%s'." % source)
 			return null
 #================================================================================#
 

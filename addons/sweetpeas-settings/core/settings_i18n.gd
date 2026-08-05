@@ -1,6 +1,6 @@
 # settings_i18n.gd
 # Loads the addon's CSV translations at runtime so host projects do not need a
-# separate import step for SweetPeas Settings strings.
+# separate import step for Sweetpea's Settings strings.
 class_name SettingsI18n
 extends RefCounted
 
@@ -8,17 +8,17 @@ const CSV_PATH := "res://addons/sweetpeas-settings/i18n/sweetpeas-settings.csv"
 
 static func load_translations() -> void:
 	if not FileAccess.file_exists(CSV_PATH):
-		push_warning("SweetPeas Settings: translation CSV missing at '%s'." % CSV_PATH)
+		push_warning("Sweetpea's Settings: translation CSV missing at '%s'." % CSV_PATH)
 		return
 
 	var file := FileAccess.open(CSV_PATH, FileAccess.READ)
 	if file == null:
-		push_error("SweetPeas Settings: failed to open '%s'." % CSV_PATH)
+		push_error("Sweetpea's Settings: failed to open '%s'." % CSV_PATH)
 		return
 
 	var header: PackedStringArray = file.get_csv_line()
 	if header.size() < 2:
-		push_error("SweetPeas Settings: '%s' needs a keys column and at least one locale." % CSV_PATH)
+		push_error("Sweetpea's Settings: '%s' needs a keys column and at least one locale." % CSV_PATH)
 		return
 
 	var translations: Dictionary = {}

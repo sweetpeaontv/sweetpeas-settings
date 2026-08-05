@@ -16,3 +16,4 @@ ui_volume,UI Volume
 display_mode_windowed,Windowed
 display_mode_borderless,Borderless
 display_mode_fullscreen,Fullscreen
+reset_section,Reset to Defaults

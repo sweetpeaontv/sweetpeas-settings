@@ -130,7 +130,7 @@ static func _apply_volume(key: String, value: Variant) -> void:
 	var bus_index := AudioServer.get_bus_index(bus_name)
 	if bus_index < 0:
 		push_warning(
-			"SweetPeas Settings: audio bus '%s' not found; skipped volume apply." % bus_name
+			"Sweetpea's Settings: audio bus '%s' not found; skipped volume apply." % bus_name
 		)
 		return
 
