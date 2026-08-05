@@ -1,19 +1,19 @@
-keys,en
-gameplay,Gameplay
-graphics,Graphics
-audio,Audio
-controls,Controls
-language,Language
-sensitivity,Mouse Sensitivity
-resolution,Resolution
-display_mode,Display Mode
-vsync,VSync
-max_fps,Max FPS
-master_volume,Master Volume
-music_volume,Music Volume
-sfx_volume,SFX Volume
-ui_volume,UI Volume
-display_mode_windowed,Windowed
-display_mode_borderless,Borderless
-display_mode_fullscreen,Fullscreen
-reset_section,Reset to Defaults
+keys,en,es
+gameplay,Gameplay,Jugabilidad
+graphics,Graphics,Gráficos
+audio,Audio,Audio
+controls,Controls,Controles
+language,Language,Idioma
+sensitivity,Mouse Sensitivity,Sensibilidad del ratón
+resolution,Resolution,Resolución
+display_mode,Display Mode,Modo de pantalla
+vsync,VSync,VSync
+max_fps,Max FPS,FPS máximos
+master_volume,Master Volume,Volumen principal
+music_volume,Music Volume,Volumen de música
+sfx_volume,SFX Volume,Volumen de efectos
+ui_volume,UI Volume,Volumen de interfaz
+display_mode_windowed,Windowed,Ventana
+display_mode_borderless,Borderless,Sin bordes
+display_mode_fullscreen,Fullscreen,Pantalla completa
+reset_section,Reset to Defaults,Restablecer valores

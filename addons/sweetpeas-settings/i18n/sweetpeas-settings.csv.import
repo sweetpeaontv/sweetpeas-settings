@@ -6,10 +6,10 @@ uid="uid://ch5ft5bmdng6q"
 
 [deps]
 
-files=["res://addons/sweetpeas-settings/i18n/sweetpeas-settings.en.translation"]
+files=["res://addons/sweetpeas-settings/i18n/sweetpeas-settings.en.translation", "res://addons/sweetpeas-settings/i18n/sweetpeas-settings.es.translation"]
 
 source_file="res://addons/sweetpeas-settings/i18n/sweetpeas-settings.csv"
-dest_files=["res://addons/sweetpeas-settings/i18n/sweetpeas-settings.en.translation"]
+dest_files=["res://addons/sweetpeas-settings/i18n/sweetpeas-settings.en.translation", "res://addons/sweetpeas-settings/i18n/sweetpeas-settings.es.translation"]
 
 [params]
 

@@ -9,10 +9,7 @@
 					"type": "option",
 					"options_source": "project_locales",
 					"default_source": "system_locale",
-					"default": "en",
-					"options": {
-						"English": "en"
-					}
+					"default": "en"
 				},
 				{
 					"key": "sensitivity",
@@ -23,7 +20,9 @@
 					"step": 0.1
 				}
 			],
-			"footer": ["section_reset"]
+			"footer": [
+				"section_reset"
+			]
 		},
 		{
 			"id": "graphics",
@@ -39,7 +38,10 @@
 						"1280x720"
 					],
 					"disabled_when": {
-						"display_mode": [1.0, 2.0]
+						"display_mode": [
+							1.0,
+							2.0
+						]
 					}
 				},
 				{
@@ -66,7 +68,9 @@
 					"step": 1.0
 				}
 			],
-			"footer": ["section_reset"]
+			"footer": [
+				"section_reset"
+			]
 		},
 		{
 			"id": "audio",
@@ -87,18 +91,24 @@
 					]
 				}
 			],
-			"footer": ["section_reset"]
+			"footer": [
+				"section_reset"
+			]
 		},
 		{
 			"id": "controls",
 			"_comment": "Keybind defaults come from Project Settings Input Map. settings_source injects actions at load.",
 			"settings_source": "input_map",
-			"exclude_prefixes": ["ui_"],
+			"exclude_prefixes": [
+				"ui_"
+			],
 			"settings": [],
 			"header": [
 				"control_header"
 			],
-			"footer": ["section_reset"]
+			"footer": [
+				"section_reset"
+			]
 		}
 	]
 }

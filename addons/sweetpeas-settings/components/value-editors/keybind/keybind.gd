@@ -17,12 +17,13 @@ var _binding: Dictionary = InputBinding.empty_binding()
 var _listening_column: String = ""
 var _updating := false
 var _signals_connected := false
+var _focus_restore: Control = null
 
 func _ready() -> void:
 	alignment = BoxContainer.ALIGNMENT_CENTER
 	_ensure_nodes()
 	_connect_signals()
-	set_process_unhandled_input(false)
+	set_process_input(false)
 
 func configure(_setting: Dictionary) -> void:
 	_ensure_nodes()
@@ -36,11 +37,12 @@ func set_value(value: Variant) -> void:
 	_updating = true
 	_binding = InputBinding.coerce(value)
 	_listening_column = ""
-	set_process_unhandled_input(false)
+	_focus_restore = null
+	set_process_input(false)
 	_refresh_slots()
 	_updating = false
 
-func _unhandled_input(event: InputEvent) -> void:
+func _input(event: InputEvent) -> void:
 	if _listening_column.is_empty():
 		return
 
@@ -62,7 +64,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		var motion := event as InputEventJoypadMotion
 		if absf(motion.axis_value) < _AXIS_DEADZONE:
 			return
-		
+
 		var normalized := motion.duplicate() as InputEventJoypadMotion
 		normalized.axis_value = signf(motion.axis_value)
 		event = normalized
@@ -109,13 +111,20 @@ func _on_slot_pressed(column: String) -> void:
 
 func _start_listening(column: String) -> void:
 	_listening_column = column
-	set_process_unhandled_input(true)
+	# Capture in _input before focused Controls consume ui_accept (e.g. controller A).
+	_focus_restore = get_viewport().gui_get_focus_owner()
+	if _focus_restore != null:
+		_focus_restore.release_focus()
+	set_process_input(true)
 	_refresh_slots()
 
 func _stop_listening(emit_change: bool) -> void:
 	_listening_column = ""
-	set_process_unhandled_input(false)
+	set_process_input(false)
 	_refresh_slots()
+	if _focus_restore != null and is_instance_valid(_focus_restore):
+		_focus_restore.grab_focus()
+	_focus_restore = null
 	if emit_change and not _updating:
 		value_changed.emit(get_value())
 
