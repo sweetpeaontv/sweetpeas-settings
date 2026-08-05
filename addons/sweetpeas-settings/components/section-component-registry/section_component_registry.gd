@@ -1,12 +1,8 @@
 class_name SectionComponentRegistry
 extends RefCounted
 
-const _CONTROL_HEADER := preload(
-	"res://addons/sweetpeas-settings/components/control-header.tscn"
-)
-const _SECTION_RESET := preload(
-	"res://addons/sweetpeas-settings/components/section-reset-button.tscn"
-)
+const _CONTROL_HEADER = preload("uid://cdvy1chp7018j")
+const _SECTION_RESET = preload("uid://ddxhm51xmo4un")
 
 static var _components: Dictionary = {}
 

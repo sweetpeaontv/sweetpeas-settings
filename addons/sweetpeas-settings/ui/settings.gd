@@ -11,8 +11,8 @@ var _sections: Array[Dictionary] = []
 # section_id -> header/footer controls from the schema
 var _section_components: Dictionary = {}
 
-const SETTING_ROW := preload("res://addons/sweetpeas-settings/components/setting-row.tscn")
-const SETTINGS_PANEL := preload("res://addons/sweetpeas-settings/components/settings-panel.tscn")
+const SETTING_ROW = preload("uid://c2cbsjwqa83i")
+const SETTINGS_PANEL = preload("uid://14pcikrgghwh")
 
 func _ready() -> void:
 	for section in SettingsManager.schema.sections:

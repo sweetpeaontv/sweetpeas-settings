@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://dg4olttlxhj0j"]
+
+[ext_resource type="Script" uid="uid://yectl57063pf" path="res://addons/sweetpeas-settings/components/value-editors/numeric-slider/numeric_slider.gd" id="1_numeric"]
+
+[node name="NumericSlider" type="HBoxContainer" unique_id=797224201]
+theme_override_constants/separation = 8
+alignment = 1
+script = ExtResource("1_numeric")
+
+[node name="Slider" type="HSlider" parent="." unique_id=46614727]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+ticks_on_borders = true
+ticks_position = 3
+
+[node name="InputContainer" type="HBoxContainer" parent="." unique_id=798016486]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="LineEdit" type="LineEdit" parent="InputContainer" unique_id=919207142]
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 2
+size_flags_vertical = 4
+alignment = 2
+
+[node name="SuffixLabel" type="Label" parent="InputContainer" unique_id=84854543]
+layout_mode = 2

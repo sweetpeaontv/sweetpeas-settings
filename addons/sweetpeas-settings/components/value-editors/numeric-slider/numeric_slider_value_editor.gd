@@ -1,14 +1,12 @@
 class_name NumericSliderValueEditor
 extends ValueEditor
 
-const NUMERIC_SLIDER_SCENE := preload(
-	"res://addons/sweetpeas-settings/components/value-editors/numeric-slider/numeric-slider.tscn"
-)
+const NUMERIC_SLIDER = preload("uid://dg4olttlxhj0j")
 
 var _numeric_slider: NumericSlider
 
 func _init() -> void:
-	_numeric_slider = NUMERIC_SLIDER_SCENE.instantiate()
+	_numeric_slider = NUMERIC_SLIDER.instantiate()
 	_numeric_slider.value_changed.connect(_on_value_changed)
 
 func get_control() -> Control:

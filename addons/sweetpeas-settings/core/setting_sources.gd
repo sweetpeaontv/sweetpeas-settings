@@ -81,8 +81,6 @@ static func _fill_keybind_defaults(schema: SettingsSchema) -> void:
 		if InputMap.has_action(key):
 			setting["default"] = InputBinding.snapshot_action(StringName(key))
 
-		SettingApplier.register(key, SettingApplier._apply_keybind)
-
 static func _apply_setting(setting: Dictionary) -> void:
 	if setting.has(OPTIONS_SOURCE):
 		var options := _options_for(str(setting[OPTIONS_SOURCE]))

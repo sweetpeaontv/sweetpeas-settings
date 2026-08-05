@@ -55,6 +55,39 @@ static func coerce(value: Variant, fallback: Variant = null) -> Dictionary:
 static func same_binding(a: Variant, b: Variant) -> bool:
 	return coerce(a) == coerce(b)
 
+static func same_event(a: Variant, b: Variant) -> bool:
+	var left := _normalize_event(a)
+	var right := _normalize_event(b)
+	if left == null or right == null:
+		return false
+	return left == right
+
+static func binding_contains_event(binding: Variant, encoded: Variant) -> bool:
+	var needle := _normalize_event(encoded)
+	if needle == null:
+		return false
+
+	var normalized := coerce(binding)
+	for column in [KEYBOARD, CONTROLLER]:
+		for entry in normalized[column]:
+			if same_event(entry, needle):
+				return true
+	return false
+
+static func remove_event(binding: Variant, encoded: Variant) -> Dictionary:
+	var needle := _normalize_event(encoded)
+	var normalized := coerce(binding)
+	if needle == null:
+		return normalized
+
+	var result := empty_binding()
+	for column in [KEYBOARD, CONTROLLER]:
+		for entry in normalized[column]:
+			if same_event(entry, needle):
+				continue
+			result[column].append(entry)
+	return result
+
 static func encode_event(event: InputEvent) -> Variant:
 	if event is InputEventKey:
 		var e := event as InputEventKey
@@ -118,12 +151,18 @@ static func _normalize_column(raw: Variant) -> Array:
 	if not raw is Array:
 		return out
 	for entry in raw:
-		var event := decode_event(entry)
-		if event:
-			var encoded: Variant = encode_event(event)
-			if encoded != null:
-				out.append(encoded)
+		var encoded := _normalize_event(entry)
+		if encoded != null:
+			out.append(encoded)
 	return out
+
+# Rebuild via decode/encode so partial or oddly-typed dicts match the
+# canonical shape from encode_event (same keys/types for dict equality).
+static func _normalize_event(encoded: Variant) -> Variant:
+	var event := decode_event(encoded)
+	if event == null:
+		return null
+	return encode_event(event)
 
 static func _with_mods(data: Dictionary, event: InputEventWithModifiers) -> Dictionary:
 	data["shift"] = event.shift_pressed

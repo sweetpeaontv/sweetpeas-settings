@@ -1,9 +1,8 @@
 [gd_scene format=3 uid="uid://c2cbsjwqa83i"]
 
-[ext_resource type="Script" uid="uid://xrfhnrbcuw07" path="res://addons/sweetpeas-settings/components/setting-row.gd" id="1_snqwp"]
+[ext_resource type="Script" uid="uid://xrfhnrbcuw07" path="res://addons/sweetpeas-settings/components/setting-row/setting_row.gd" id="1_snqwp"]
 
 [node name="SettingRow" type="MarginContainer" unique_id=807633001]
-anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
@@ -36,4 +35,3 @@ size_flags_stretch_ratio = 2.0
 custom_minimum_size = Vector2(152, 0)
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_stretch_ratio = 1.0

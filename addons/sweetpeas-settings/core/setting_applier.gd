@@ -20,22 +20,32 @@ const _VOLUME_BUSES := {
 	"ui_volume": "UI",
 }
 
-static var data: SettingsData
-static var _appliers: Dictionary = {} # String key -> Callable(value) or Callable(key, value)
-static var _builtins_registered := false
+var data: SettingsData
+var _appliers: Dictionary = {} # String key -> Callable(value) or Callable(key, value)
+
+func _init() -> void:
+	_appliers["language"] = _apply_language
+	_appliers["display_mode"] = _apply_display_mode
+	_appliers["resolution"] = _apply_resolution
+	_appliers["vsync"] = _apply_vsync
+	_appliers["max_fps"] = _apply_max_fps
+	for key in _VOLUME_BUSES:
+		_appliers[key] = _apply_volume
+
+func setup(p_data: SettingsData) -> void:
+	data = p_data
 
 # REGISTRY
 #================================================================================#
-static func register(key: String, applier: Callable) -> void:
-	_ensure_builtins()
+func register(key: String, applier: Callable) -> void:
 	_appliers[key] = applier
+	if data != null and data.has_key(key):
+		apply(key, data.get_value(key))
 
-static func unregister(key: String) -> void:
-	_ensure_builtins()
+func unregister(key: String) -> void:
 	_appliers.erase(key)
 
-static func apply(key: String, value: Variant) -> void:
-	_ensure_builtins()
+func apply(key: String, value: Variant) -> void:
 	if not _appliers.has(key):
 		return
 
@@ -46,35 +56,18 @@ static func apply(key: String, value: Variant) -> void:
 
 	callable.call(value)
 
-# Game appliers registered after this runs are not applied until their key changes (or apply_all is called again).
-# Generally it is best to keep SettingsManager as the last autoload so other autoloads can register_applier in _ready first.
-# Basically, if you want an autoload to have a setting that is managed by sweetpeas-settings, you should register_applier in _ready.
-static func apply_all() -> void:
-	_ensure_builtins()
-
+func apply_all() -> void:
 	if not data:
 		return
 
 	for key in _appliers:
 		if data.has_key(key):
 			apply(key, data.get_value(key))
-
-static func _ensure_builtins() -> void:
-	if _builtins_registered:
-		return
-	_builtins_registered = true
-	_appliers["language"] = _apply_language
-	_appliers["display_mode"] = _apply_display_mode
-	_appliers["resolution"] = _apply_resolution
-	_appliers["vsync"] = _apply_vsync
-	_appliers["max_fps"] = _apply_max_fps
-	for key in _VOLUME_BUSES:
-		_appliers[key] = _apply_volume
 #================================================================================#
 
 # LOCALE
 #================================================================================#
-static func _apply_language(value: Variant) -> void:
+func _apply_language(value: Variant) -> void:
 	if value == null:
 		return
 	var code := str(value).strip_edges()
@@ -85,14 +78,14 @@ static func _apply_language(value: Variant) -> void:
 
 # DISPLAY
 #================================================================================#
-static func _apply_display_mode(value: Variant) -> void:
+func _apply_display_mode(value: Variant) -> void:
 	var mode := _window_mode_for(value)
 	DisplayServer.window_set_mode(mode)
 
 	if mode == DisplayServer.WINDOW_MODE_WINDOWED and data != null:
 		_apply_resolution(data.get_value("resolution"))
 
-static func _apply_resolution(value: Variant) -> void:
+func _apply_resolution(value: Variant) -> void:
 	if data != null and int(data.get_value("display_mode")) != DisplayMode.WINDOWED:
 		return
 
@@ -101,13 +94,13 @@ static func _apply_resolution(value: Variant) -> void:
 		return
 	DisplayServer.window_set_size(size)
 
-static func _apply_vsync(value: Variant) -> void:
+func _apply_vsync(value: Variant) -> void:
 	var mode := (
 		DisplayServer.VSYNC_ENABLED if bool(value) else DisplayServer.VSYNC_DISABLED
 	)
 	DisplayServer.window_set_vsync_mode(mode)
 
-static func _window_mode_for(value: Variant) -> DisplayServer.WindowMode:
+func _window_mode_for(value: Variant) -> DisplayServer.WindowMode:
 	match int(value):
 		DisplayMode.BORDERLESS:
 			return DisplayServer.WINDOW_MODE_FULLSCREEN
@@ -119,13 +112,13 @@ static func _window_mode_for(value: Variant) -> DisplayServer.WindowMode:
 
 # PERFORMANCE
 #================================================================================#
-static func _apply_max_fps(value: Variant) -> void:
+func _apply_max_fps(value: Variant) -> void:
 	Engine.max_fps = int(value)
 #================================================================================#
 
 # AUDIO
 #================================================================================#
-static func _apply_volume(key: String, value: Variant) -> void:
+func _apply_volume(key: String, value: Variant) -> void:
 	var bus_name := str(_VOLUME_BUSES[key])
 	var bus_index := AudioServer.get_bus_index(bus_name)
 	if bus_index < 0:
@@ -146,6 +139,6 @@ static func _apply_volume(key: String, value: Variant) -> void:
 
 # CONTROLS
 #================================================================================#
-static func _apply_keybind(key: String, value: Variant) -> void:
+func _apply_keybind(key: String, value: Variant) -> void:
 	InputBinding.apply_to_action(key, value)
 #================================================================================#

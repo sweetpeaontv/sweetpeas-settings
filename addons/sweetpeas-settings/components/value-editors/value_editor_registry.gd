@@ -2,13 +2,13 @@ class_name ValueEditorRegistry
 extends RefCounted
 
 const _BasicValueEditors := preload(
-	"res://addons/sweetpeas-settings/components/value-editors/basic-value-editors.gd"
+	"res://addons/sweetpeas-settings/components/value-editors/basic_value_editors.gd"
 )
 const _NumericSliderValueEditor := preload(
-	"res://addons/sweetpeas-settings/components/value-editors/numeric-slider/numeric-slider-value-editor.gd"
+	"res://addons/sweetpeas-settings/components/value-editors/numeric-slider/numeric_slider_value_editor.gd"
 )
 const _KeybindValueEditor := preload(
-	"res://addons/sweetpeas-settings/components/value-editors/keybind/keybind-value-editor.gd"
+	"res://addons/sweetpeas-settings/components/value-editors/keybind/keybind_value_editor.gd"
 )
 
 static var _editors: Dictionary = {}

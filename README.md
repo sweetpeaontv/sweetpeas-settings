@@ -29,7 +29,7 @@ Once enabled, the plugin adds the `SettingsManager` autoload. Instance `res://ad
 
 ### Project setup notes
 
-**Autoload order.** Keep `SettingsManager` as the **last** autoload. On boot it applies all settings once; if your own autoloads need to `register_applier` for custom keys, they should do that in `_ready` *before* `SettingsManager` runs. Putting it last makes that timing reliable.
+**Custom appliers.** Call `SettingsManager.register_applier` from any autoload `_ready` (or later). Registrations before boot finishes are queued; registrations after boot apply the current stored value immediately.
 
 **Audio buses.** The default volume settings push into Godot's `AudioServer` by bus name:
 
@@ -148,6 +148,8 @@ That lets you keep the addon updatable while defining your own settings shape wi
 Add actions in **Project → Project Settings → Input Map**. The controls section uses `"settings_source": "input_map"`, so those actions are injected as editable keybinds automatically — no schema entries required per action.
 
 Use `exclude_prefixes` on that section if you want to hide engine/internal actions.
+
+Rebinding steals: if the key or button you assign is already used by another action, that other action is unbound for that input first. Shared keys in project defaults are left alone until the player rebinds.
 
 ## Styling & customization
 

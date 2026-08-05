@@ -13,10 +13,9 @@ func _ready() -> void:
 		Input.joy_connection_changed.connect(_on_joy_connection_changed)
 
 func _input(event: InputEvent) -> void:
-	var before := InputDeviceTracker.current_family()
 	Icons.note_input_event(event)
-	var after := InputDeviceTracker.current_family()
-	if after != before or after != _last_family:
+	var family := InputDeviceTracker.current_family()
+	if family != _last_family:
 		_refresh_icons()
 
 func _ensure_nodes() -> void:
@@ -33,4 +32,5 @@ func _refresh_icons() -> void:
 	_controller_icon.texture = Icons.texture_for_controller_device(_last_family)
 
 func _on_joy_connection_changed(_device: int, _connected: bool) -> void:
+	InputDeviceTracker.refresh_connections()
 	_refresh_icons()
