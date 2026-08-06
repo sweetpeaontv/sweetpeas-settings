@@ -25,7 +25,6 @@ static func _ensure_editors() -> void:
 		return
 
 	_editors = {
-		"slider": _BasicValueEditors.SliderValueEditor,
 		"option": _BasicValueEditors.OptionValueEditor,
 		"spinbox": _BasicValueEditors.SpinboxValueEditor,
 		"toggle": _BasicValueEditors.ToggleValueEditor,
