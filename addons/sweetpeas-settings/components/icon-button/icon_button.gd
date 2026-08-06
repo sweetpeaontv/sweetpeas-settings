@@ -101,6 +101,10 @@ func set_icon_size(size: Vector2) -> void:
 func get_icon_size() -> Vector2:
 	return _icon_size
 
+func set_tooltip(text: String) -> void:
+	_ensure_nodes()
+	_button.tooltip_text = text
+
 func set_content_margins(margin: int) -> void:
 	_ensure_nodes()
 	_content.add_theme_constant_override("margin_left", margin)

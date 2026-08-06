@@ -120,7 +120,7 @@ func _ensure_nodes() -> void:
 		_add_button.set_text("")
 	else:
 		_add_button.set_text("+")
-	_add_button.tooltip_text = "Add binding"
+	_add_button.set_tooltip(tr("add_binding"))
 
 func _connect_signals() -> void:
 	if _signals_connected:

@@ -4,12 +4,9 @@ extends Control
 One keybind cell in the row - shows the icon or label, waiting state, clear badge, and conflict tint.
 """
 
-## Theme color: SweetKeybindSlot / conflict_icon_modulate (fallback yellow).
-
 signal pressed
 signal clear_pressed
 
-const _DEFAULT_CONFLICT_MODULATE: Color = Color(1.0, 0.85, 0.2, 1.0)
 const _SLOT_MIN_SIZE: Vector2 = Vector2(72, 40)
 const _ICON_SIZE: Vector2 = Vector2(40, 40)
 const _WAITING_TEXT: String = "..."
@@ -70,9 +67,7 @@ func set_listening(listening: bool) -> void:
 		_icon_button.set_text(_WAITING_TEXT)
 		_icon_button.set_badge_icon(null)
 		_icon_button.set_badge_text("x")
-		_icon_button.set_badge_background_color(Color(0.86, 0.2, 0.2))
-		_icon_button.set_badge_font_color(Color.BLACK)
-		_icon_button.set_badge_tooltip("Clear binding")
+		_icon_button.set_badge_tooltip(tr("clear_binding"))
 		_icon_button.set_badge_visible(true)
 	else:
 		_icon_button.set_badge_visible(false)
@@ -103,20 +98,16 @@ func is_clear_badge_at(global_pos: Vector2) -> bool:
 func _waiting_texture() -> Texture2D:
 	return SweetIcons.load_texture(SweetIcons.join("keyboard-mouse", "keyboard_any.svg"))
 
-func _conflict_modulate() -> Color:
-	# Themes can override: theme type "SweetKeybindSlot", color name "conflict_icon_modulate".
-	if has_theme_color("conflict_icon_modulate", "SweetKeybindSlot"):
-		return get_theme_color("conflict_icon_modulate", "SweetKeybindSlot")
-	return _DEFAULT_CONFLICT_MODULATE
-
 func _apply_conflict_visuals() -> void:
 	_ensure_nodes()
 	if _conflicted and not _listening:
-		_icon_button.set_icon_modulate(_conflict_modulate())
-		_icon_button.tooltip_text = _conflict_tooltip
+		_icon_button.set_icon_modulate(
+			get_theme_color("conflict_icon_modulate", "SweetKeybindSlot")
+		)
+		_icon_button.set_tooltip(_conflict_tooltip)
 	else:
 		_icon_button.set_icon_modulate(Color.WHITE)
-		_icon_button.tooltip_text = ""
+		_icon_button.set_tooltip("")
 #================================================================================#
 
 # SIGNAL HANDLERS

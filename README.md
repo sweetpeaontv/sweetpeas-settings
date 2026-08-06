@@ -1,15 +1,15 @@
-# Sweetpea's Settings
+<img src="images/sweetpeas-settings.png" alt="" width="1280"> 
 
-An open source, drop-in settings menu for Godot games.
+A drop-in settings menu for Godot 4.7+ games.
 
 Ships with basic settings most games need and is built to be extended. Drop it straight into your game or treat it as a jumping-off point to restructure for your specific needs.
 
 ## Features
 
-- **Ready-made defaults** for gameplay, graphics, audio, and controls
-- **Schema-driven UI** — settings are defined in JSON, not hardcoded. Add additional settings with a few lines.
-- **Automatic keybinds** — Input Map actions are automatically parsed into editable bindings.
-- **Simple, themeable UI** — style it with Godot themes, or swap/edit the components yourself
+- **Ready-made defaults** 	- for gameplay, graphics, audio, and controls
+- **Schema-driven UI** 		- settings are defined in JSON, not hardcoded. Add additional settings with a few lines.
+- **Automatic keybinds** 	- Input Map actions are automatically parsed into editable bindings.
+- **Simple, themeable UI** 	- style it with Godot themes, or swap/edit the components yourself
 
 ## Installation
 
@@ -40,8 +40,6 @@ Once enabled, the plugin adds the `SettingsManager` autoload. Instance `res://ad
 | `sfx_volume` | `SFX` |
 | `ui_volume` | `UI` |
 
-`Master` exists by default. Add `Music`, `SFX`, and `UI` under **Project → Project Settings → Audio → Buses** (or the Audio bus editor) if you use those sliders — missing buses are skipped with a warning.
-
 ## Schema shape
 
 Settings are defined in JSON under `addons/sweetpeas-settings/config/`. The shipped defaults live in `default_schema.json` — peek there for a full working example. The shape itself looks like this:
@@ -61,11 +59,16 @@ Settings are defined in JSON under `addons/sweetpeas-settings/config/`. The ship
 				{
 					"key": "...",
 					"type": "...",
+					"label": "...",
 					"default": ...,
+					"default_source": "...",
 					"min": ...,
 					"max": ...,
 					"step": ...,
+					"suffix": "...",
+					"display_scale": ...,
 					"options": {},
+					"options_source": "...",
 					"disabled_when": {}
 				},
 				{
@@ -108,9 +111,14 @@ Each entry in `settings` becomes one or more rows.
 | `key` | Id for a single setting. One row, one stored value. Display text is `tr(key)` unless overridden. |
 | `keys` | Batch of ids that share this entry's other fields. Expands into separate settings at load (e.g. several volume sliders from one dict). Use instead of `key`. |
 | `type` | Which editor to show (see below). |
+| `label` | Optional display name override. Passed through `tr()`. |
 | `default` | Starting value before the player changes anything. |
+| `default_source` | Optional. Fill `default` from the runtime environment (`system_locale`, `primary_resolution`). Overrides `default` when it resolves. |
 | `min` / `max` / `step` | Range/step for numeric types (`numeric_slider`, `spinbox`). |
-| `options` | Choices for `option` types — a `{ "Label": value }` map or a list of values. |
+| `suffix` | Optional. Text shown after a `numeric_slider` value (e.g. `"%"`). |
+| `display_scale` | Optional. Multiplies the stored value for display on `numeric_slider` (e.g. `100` to show `0.1` as `10`). |
+| `options` | Choices for `option` types — a `{ "Label": value }` map, a list of values, or `[{ "value", "label" }, ...]`. |
+| `options_source` | Optional. Fill `options` from the runtime environment (`project_locales`, `display_resolutions`). Replaces static `options` when it resolves. |
 | `disabled_when` | Optional. Disable this setting when another setting's value is in the given list. |
 
 Use `key` for one-offs. Use `keys` when several settings share the same shape.
@@ -135,7 +143,7 @@ The built-in list lives at:
 addons/sweetpeas-settings/config/default_schema.json
 ```
 
-Tweak sections, keys, defaults, ranges, and options to match your game.
+Add new settings or tweak the current ones to match your game.
 
 ### Override with your own schema
 
@@ -158,8 +166,6 @@ The UI is intentionally simple: tabs, rows, and value editors. It is meant to ge
 - Apply a **Theme** to the settings scene (or a parent) to restyle controls
 - Edit or replace the scenes under `ui/` and `components/` to change layout and behavior
 - Wire custom appliers via `SettingsManager` when a setting needs to affect your own systems
-
-Use it as a drop-in if that is enough. Dig into the scenes and schema when you want something more game-specific.
 
 ## Default sections
 

@@ -17,3 +17,7 @@ display_mode_windowed,Windowed,Ventana
 display_mode_borderless,Borderless,Sin bordes
 display_mode_fullscreen,Fullscreen,Pantalla completa
 reset_section,Reset to Defaults,Restablecer valores
+add_binding,Add binding,Añadir asignación
+clear_binding,Clear binding,Quitar asignación
+binding_conflict,Binding conflict,Conflicto de asignación
+also_bound_on,Also bound on: %s,También asignado en: %s

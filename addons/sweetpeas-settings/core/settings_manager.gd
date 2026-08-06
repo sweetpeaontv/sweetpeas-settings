@@ -34,9 +34,8 @@ func _ready() -> void:
 		_queue_save()
 
 	_applier = SettingApplier.new()
-	_applier.setup(data)
+	_applier.setup(data, schema)
 	_flush_pending_appliers()
-	_register_keybind_appliers()
 	_applier.apply_all()
 #================================================================================#
 
@@ -104,6 +103,8 @@ func register_applier(key: String, callable: Callable) -> void:
 		_pending_appliers[key] = callable
 		return
 	_applier.register(key, callable)
+	if data.has_key(key):
+		_applier.apply(key, data.get_value(key))
 
 func unregister_applier(key: String) -> void:
 	_pending_appliers.erase(key)
@@ -134,13 +135,6 @@ func _flush_pending_appliers() -> void:
 	for key in _pending_appliers:
 		_applier.register(key, _pending_appliers[key])
 	_pending_appliers.clear()
-
-func _register_keybind_appliers() -> void:
-	for key in schema.keys():
-		var setting := schema.get_setting(key)
-		if str(setting.get("type", "")) != "keybind":
-			continue
-		_applier.register(key, _applier._apply_keybind)
 
 func _queue_save() -> void:
 	_dirty = true

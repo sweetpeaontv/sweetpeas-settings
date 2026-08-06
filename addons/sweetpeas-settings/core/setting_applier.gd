@@ -32,15 +32,16 @@ func _init() -> void:
 	for key in _VOLUME_BUSES:
 		_appliers[key] = _apply_volume
 
-func setup(p_data: SettingsData) -> void:
+func setup(p_data: SettingsData, p_schema: SettingsSchema) -> void:
 	data = p_data
 
+	for key in p_schema.keys():
+		if str(p_schema.get_setting(key).get("type", "")) == "keybind":
+			register(key, _apply_keybind)
 # REGISTRY
 #================================================================================#
 func register(key: String, applier: Callable) -> void:
 	_appliers[key] = applier
-	if data != null and data.has_key(key):
-		apply(key, data.get_value(key))
 
 func unregister(key: String) -> void:
 	_appliers.erase(key)

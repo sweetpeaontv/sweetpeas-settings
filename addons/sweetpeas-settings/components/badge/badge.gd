@@ -3,7 +3,7 @@ extends Button
 
 const _SIZE: Vector2 = Vector2(22, 22)
 const _ICON_SIZE: Vector2 = Vector2(14, 14)
-const _LABEL_Y_NUDGE: float = -2.0
+const _LABEL_OPTICAL_LIFT: float = 2.0
 const _STYLE_NAMES: Array[StringName] = [
 	&"normal",
 	&"hover",
@@ -65,6 +65,10 @@ func _ensure_nodes() -> void:
 	_label.add_theme_constant_override("line_spacing", 0)
 	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+
+	var label_style: StyleBoxEmpty = StyleBoxEmpty.new()
+	label_style.content_margin_bottom = _LABEL_OPTICAL_LIFT * 2.0
+	_label.add_theme_stylebox_override("normal", label_style)
 	_apply_font_color()
 #================================================================================#
 
@@ -136,18 +140,11 @@ func _refresh_content() -> void:
 
 	_label.text = _text
 	_label.visible = not has_icon and not _text.is_empty()
-	call_deferred("_apply_label_nudge")
 
 func _apply_font_color() -> void:
 	if _label == null:
 		return
 	_label.add_theme_color_override("font_color", _font_color)
-
-func _apply_label_nudge() -> void:
-	if _label == null or not is_instance_valid(_label) or not _label.visible:
-		return
-	# CenterContainer lays out first; shift the glyph optically upward.
-	_label.position = Vector2(_label.position.x, _label.position.y + _LABEL_Y_NUDGE)
 
 func _apply_disabled() -> void:
 	modulate.a = 0.45 if disabled else 1.0

@@ -117,7 +117,7 @@ func _rebuild_pairs() -> void:
 	while get_child_count() > 0:
 		var child: Node = get_child(0)
 		remove_child(child)
-		child.free()
+		child.queue_free()
 	_slot_entries.clear()
 
 	var row_count: int = _pair_row_count()
@@ -196,8 +196,18 @@ func _conflict_keys_for(encoded: Variant) -> Array:
 
 func _conflict_tooltip(other_keys: Array) -> String:
 	if other_keys.is_empty():
-		return "Binding conflict"
-	return "Also bound on: %s" % ", ".join(PackedStringArray(other_keys))
+		return tr("binding_conflict")
+	var labels: PackedStringArray = PackedStringArray()
+	for key in other_keys:
+		labels.append(_setting_label(str(key)))
+	return tr("also_bound_on") % ", ".join(labels)
+
+func _setting_label(key: String) -> String:
+	# Match setting_row: tr(label override) or tr(key).
+	if SettingsManager.schema == null or not SettingsManager.schema.has_key(key):
+		return tr(key)
+	var setting: Dictionary = SettingsManager.schema.get_setting(key)
+	return tr(str(setting.get("label", key)))
 #================================================================================#
 
 # SIGNAL HANDLERS
