@@ -1,8 +1,4 @@
 extends VBoxContainer
-"""
-All keyboard/controller binding rows for one keybind setting (one action).
-Builds the slot grid, stores the binding data, and keeps each cell's display up to date.
-"""
 
 const Icons = preload("uid://dhdqwmdcw4n26")
 const InputBinding = preload("uid://qv8fn38jaxf6")

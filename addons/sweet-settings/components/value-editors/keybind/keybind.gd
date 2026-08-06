@@ -1,8 +1,4 @@
 extends HBoxContainer
-"""
-The keybind control for one setting: listens for a new bind, hosts the pairs grid and add button,
-and emits value_changed when the binding changes.
-"""
 
 const IconButton = preload("uid://f3a6m7hpwk6d")
 const IconPaths = preload("uid://cxwurn6qv7ral")

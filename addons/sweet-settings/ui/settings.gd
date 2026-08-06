@@ -3,7 +3,6 @@ extends VBoxContainer
 const SETTINGS_PANEL = preload("uid://14pcikrgghwh")
 const SETTING_ROW = preload("uid://c2cbsjwqa83i")
 
-@onready var header = $Header
 @onready var body = $Body
 @onready var tab_bar = $Header/TabBar
 

@@ -1,7 +1,4 @@
 extends Control
-"""
-One keybind cell in the row - shows the icon or label, waiting state, clear badge, and conflict tint.
-"""
 
 const Badge = preload("uid://com2f7n6m5csr")
 const IconButton = preload("uid://f3a6m7hpwk6d")
