@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://ddxhm51xmo4un"]
+
+[ext_resource type="Script" uid="uid://p2lq0dckax8e" path="res://addons/sweet-settings/components/section-reset-button/section_reset_button.gd" id="1_fw21b"]
+
+[node name="SectionResetButton" type="MarginContainer" unique_id=1788492339]
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 4
+script = ExtResource("1_fw21b")
+
+[node name="Button" type="Button" parent="." unique_id=2006382606]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Reset to Defaults"

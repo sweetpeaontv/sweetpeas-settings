@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://74rotn6prfqv"]
+
+[ext_resource type="Script" uid="uid://dsakjl531sxt5" path="res://addons/sweet-settings/components/value-editors/keybind/keybind.gd" id="1_keybind"]
+[ext_resource type="PackedScene" uid="uid://cdlcg5uhf1qjq" path="res://addons/sweet-settings/components/icon-button/icon-button.tscn" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://lceuybuighrs" path="res://addons/sweet-settings/components/value-editors/keybind/keybind-pairs/keybind_pairs.tscn" id="3_pairs"]
+
+[node name="KeybindEditor" type="HBoxContainer" unique_id=203564894]
+theme_override_constants/separation = 6
+alignment = 1
+script = ExtResource("1_keybind")
+
+[node name="Pairs" parent="." unique_id=1866657796 instance=ExtResource("3_pairs")]
+layout_mode = 2
+
+[node name="AddButton" parent="." unique_id=821821539 instance=ExtResource("2_icon")]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 0

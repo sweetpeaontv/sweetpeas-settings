@@ -1,0 +1,54 @@
+[gd_scene format=3 uid="uid://cdvy1chp7018j"]
+
+[ext_resource type="Script" uid="uid://dse06e7unfsnk" path="res://addons/sweet-settings/components/control-header/control_header.gd" id="1_header"]
+
+[node name="ControlHeader" type="MarginContainer" unique_id=767325581]
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 0
+script = ExtResource("1_header")
+
+[node name="Row" type="HBoxContainer" parent="." unique_id=823044112]
+layout_mode = 2
+
+[node name="NameContainer" type="HBoxContainer" parent="Row" unique_id=1935957127]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SpreadContainer" type="HBoxContainer" parent="Row" unique_id=545545983]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="ValueEditorContainer" type="HBoxContainer" parent="Row" unique_id=2013710047]
+custom_minimum_size = Vector2(198, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="Columns" type="HBoxContainer" parent="Row/ValueEditorContainer" unique_id=694501376]
+custom_minimum_size = Vector2(152, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="KeyboardIcon" type="TextureRect" parent="Row/ValueEditorContainer/Columns" unique_id=1856401981]
+custom_minimum_size = Vector2(72, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ControllerIcon" type="TextureRect" parent="Row/ValueEditorContainer/Columns" unique_id=28640561]
+custom_minimum_size = Vector2(72, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+expand_mode = 1
+stretch_mode = 5
+
+[node name="AddButtonSpacer" type="Control" parent="Row/ValueEditorContainer" unique_id=1948203751]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 0

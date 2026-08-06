@@ -158,6 +158,14 @@ The UI is intentionally simple: tabs, rows, and value editors. It is meant to ge
 
 A small theme ships at `addons/sweetpeas-settings/theme/sweetpeas_settings.tres` with a few custom colors. Extend it, fold those entries into your project's theme, or apply a different theme to the settings scene (or a parent) to restyle controls.
 
+Properties specific to this addon live under the `SweetSettings` theme type, so a matching entry in your own theme overrides them:
+
+| Theme item | Effect |
+|------------|--------|
+| `SweetSettings/colors/conflict_icon_modulate` | Tint applied to a keybind icon that is bound to more than one action |
+
+Standard controls (buttons, sliders, dropdowns) style through normal Godot theme inheritance.
+
 - Edit or replace the scenes under `ui/` and `components/` to change layout and behavior
 - Wire custom appliers via `SweetSettings` when a setting needs to affect your own systems
 
