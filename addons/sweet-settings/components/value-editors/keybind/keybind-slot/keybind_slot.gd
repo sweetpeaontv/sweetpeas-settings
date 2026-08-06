@@ -69,8 +69,7 @@ func set_listening(listening: bool) -> void:
 	if listening:
 		_icon_button.set_icon(_waiting_texture())
 		_icon_button.set_text(_WAITING_TEXT)
-		_icon_button.set_badge_icon(null)
-		_icon_button.set_badge_text("x")
+		_icon_button.set_badge_icon(_clear_badge_texture())
 		_icon_button.set_badge_tooltip(tr("clear_binding"))
 		_icon_button.set_badge_visible(true)
 	else:
@@ -101,6 +100,9 @@ func is_clear_badge_at(global_pos: Vector2) -> bool:
 #================================================================================#
 func _waiting_texture() -> Texture2D:
 	return IconPaths.load_texture(IconPaths.join("keyboard-mouse", "keyboard_any.svg"))
+
+func _clear_badge_texture() -> Texture2D:
+	return IconPaths.load_texture(IconPaths.join("flairs", "flair_cross.svg"))
 
 func _apply_conflict_visuals() -> void:
 	_ensure_nodes()

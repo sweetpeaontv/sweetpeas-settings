@@ -9,6 +9,7 @@ const KeybindPairs = preload("uid://0d205b373m3o")
 signal value_changed(value: Dictionary)
 
 const _AXIS_DEADZONE: float = 0.5
+const _HOLD_CLEAR_SECONDS: float = 0.8
 
 var _pairs: KeybindPairs
 var _add_button: IconButton
@@ -20,6 +21,8 @@ var _updating: bool = false
 var _signals_connected: bool = false
 var _disabled: bool = false
 var _focus_restore: Control = null
+var _hold_button_index: int = -1
+var _hold_elapsed: float = 0.0
 
 # INIT
 #================================================================================#
@@ -27,6 +30,7 @@ func _ready() -> void:
 	alignment = BoxContainer.ALIGNMENT_CENTER
 	_ensure_nodes()
 	_connect_signals()
+	set_process(false)
 	set_process_input(false)
 	_pairs.sync()
 #================================================================================#
@@ -71,8 +75,33 @@ func _input(event: InputEvent) -> void:
 
 	Icons.note_input_event(event)
 
-	# _input runs before GUI, so mouse clicks on the clear badge would otherwise
-	# be captured as a mouse-button bind. Let the badge handle those.
+	if event is InputEventJoypadButton:
+		_joypad_button_listener(event as InputEventJoypadButton)
+	else:
+		_press_bind_listener(event)
+
+func _joypad_button_listener(button: InputEventJoypadButton) -> void:
+	if InputBinding.column_for_event(button) != _listening_column:
+		return
+
+	if button.is_pressed():
+		_start_hold_clear(int(button.button_index))
+		get_viewport().set_input_as_handled()
+		return
+
+	if int(button.button_index) != _hold_button_index:
+		return
+
+	var encoded: Variant = InputBinding.encode_event(button)
+	_reset_hold_clear()
+	if encoded == null:
+		return
+
+	_pairs.set_slot_event(_listening_column, _listening_index, encoded)
+	_stop_listening(true)
+	get_viewport().set_input_as_handled()
+
+func _press_bind_listener(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		var mouse: InputEventMouseButton = event as InputEventMouseButton
 		if _pairs.is_clear_badge_at(_listening_column, _listening_index, mouse.global_position):
@@ -101,6 +130,19 @@ func _input(event: InputEvent) -> void:
 	_pairs.set_slot_event(_listening_column, _listening_index, encoded)
 	_stop_listening(true)
 	get_viewport().set_input_as_handled()
+
+func _process(delta: float) -> void:
+	if _hold_button_index < 0:
+		return
+
+	_hold_elapsed += delta
+	if _hold_elapsed < _HOLD_CLEAR_SECONDS:
+		return
+
+	var column: String = _listening_column
+	var index: int = _listening_index
+	_reset_hold_clear()
+	_on_clear_pressed(column, index)
 #================================================================================#
 
 # SETUP
@@ -188,6 +230,7 @@ func _start_listening(column: String, index: int) -> void:
 	_pairs.set_listening(column, index)
 
 func _stop_listening(emit_change: bool, restore_focus: bool = true) -> void:
+	_reset_hold_clear()
 	_listening_column = ""
 	_listening_index = -1
 	set_process_input(false)
@@ -205,6 +248,16 @@ func _emit_value_changed() -> void:
 
 # HELPERS
 #================================================================================#
+func _start_hold_clear(button_index: int) -> void:
+	_hold_button_index = button_index
+	_hold_elapsed = 0.0
+	set_process(true)
+
+func _reset_hold_clear() -> void:
+	_hold_button_index = -1
+	_hold_elapsed = 0.0
+	set_process(false)
+
 func _is_pressed_bind_event(event: InputEvent) -> bool:
 	if event is InputEventKey:
 		var key: InputEventKey = event as InputEventKey

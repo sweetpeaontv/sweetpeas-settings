@@ -116,12 +116,6 @@ func set_content_margins(margin: int) -> void:
 
 # BADGE
 #================================================================================#
-func set_badge_text(text: String) -> void:
-	_ensure_nodes()
-	if _badge == null:
-		return
-	_badge.set_content_text(text)
-
 func set_badge_icon(texture: Texture2D) -> void:
 	_ensure_nodes()
 	if _badge == null:
@@ -139,18 +133,6 @@ func set_badge_tooltip(text: String) -> void:
 	if _badge == null:
 		return
 	_badge.set_tooltip(text)
-
-func set_badge_background_color(color: Color) -> void:
-	_ensure_nodes()
-	if _badge == null:
-		return
-	_badge.set_background_color(color)
-
-func set_badge_font_color(color: Color) -> void:
-	_ensure_nodes()
-	if _badge == null:
-		return
-	_badge.set_font_color(color)
 
 func set_badge_disabled(disabled: bool) -> void:
 	_ensure_nodes()

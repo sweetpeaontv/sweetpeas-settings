@@ -35,7 +35,7 @@ Once enabled, the plugin adds the `SweetSettings` autoload. Instance `res://addo
 
 **Audio buses.** The default schema only wires volume into Godot's built-in `Master` bus (`master_volume`). `music_volume`, `sfx_volume`, and `ui_volume` are included to demo the schema's `keys[]` batching — they won't do anything until you add matching buses (`Music`, `SFX`, `UI`) and route audio through them.
 
-**Save path.** `SAVE_PATH` in `addons/sweet-settings/addon_paths.gd` (`user://sweet-settings.json`) is a placeholder to demo settings persistence. Point it at a more appropriate location when you add the addon to your project.
+**Save path.** `SAVE_PATH` in `addons/sweet-settings/addon_paths.gd` (`user://sweet_settings.json`) is a placeholder to demo settings persistence. Point it at a more appropriate location when you add the addon to your project.
 
 ## Schema shape
 

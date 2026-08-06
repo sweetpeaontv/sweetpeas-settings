@@ -3,9 +3,9 @@
 [ext_resource type="StyleBox" uid="uid://mro7k8wrldb2" path="res://addons/sweet-settings/components/badge/badge.tres" id="1_2ratl"]
 [ext_resource type="Script" uid="uid://com2f7n6m5csr" path="res://addons/sweet-settings/components/badge/badge.gd" id="2_badge"]
 
-[node name="Badge" type="Button"]
-clip_contents = true
+[node name="Badge" type="Button" unique_id=1807732234]
 custom_minimum_size = Vector2(22, 22)
+clip_contents = true
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -20,7 +20,7 @@ theme_override_styles/disabled = ExtResource("1_2ratl")
 theme_override_styles/focus = ExtResource("1_2ratl")
 script = ExtResource("2_badge")
 
-[node name="Content" type="CenterContainer" parent="."]
+[node name="Content" type="CenterContainer" parent="." unique_id=1513927152]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -29,17 +29,11 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Icon" type="TextureRect" parent="Content"]
+[node name="Icon" type="TextureRect" parent="Content" unique_id=11392680]
 visible = false
-custom_minimum_size = Vector2(12, 12)
+modulate = Color(0, 0, 0, 1)
+custom_minimum_size = Vector2(36, 36)
 layout_mode = 2
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
-
-[node name="Label" type="Label" parent="Content"]
-visible = false
-layout_mode = 2
-mouse_filter = 2
-horizontal_alignment = 1
-vertical_alignment = 1
