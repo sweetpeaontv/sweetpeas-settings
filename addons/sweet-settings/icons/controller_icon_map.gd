@@ -8,6 +8,17 @@ const InputDeviceTracker = preload("uid://dpnmg6swmq30l")
 
 const _AXIS_DEADZONE := 0.5
 
+# Filled filename -> outline filename when mechanical "_outline" insertion misses.
+const _OUTLINE_OVERRIDES := {
+	InputDeviceTracker.FAMILY_XBOX: {
+		"xbox_stick_l_press.svg": "xbox_ls_outline.svg",
+		"xbox_stick_r_press.svg": "xbox_rs_outline.svg",
+	},
+	InputDeviceTracker.FAMILY_PLAYSTATION: {
+		"playstation5_touchpad_press.svg": "playstation5_touchpad_outline.svg",
+	},
+}
+
 # PROFILES
 #================================================================================#
 # dir      folder under icons/ holding this family's art
@@ -69,7 +80,6 @@ const _PROFILES := {
 	InputDeviceTracker.FAMILY_PLAYSTATION: {
 		"dir": "playstation-series",
 		"device": "controller_playstation5.svg",
-		# No guide/PS-button art ships with the pack; that button falls back to Xbox.
 		"buttons": {
 			JOY_BUTTON_A: "playstation_button_cross.svg",
 			JOY_BUTTON_B: "playstation_button_circle.svg",
@@ -365,47 +375,109 @@ const _PROFILES := {
 			JOY_AXIS_TRIGGER_RIGHT: {"neutral": "controller_button_r2.svg"},
 		},
 	},
+
+	InputDeviceTracker.FAMILY_GENERIC: {
+		"dir": "generic",
+		"device": "",
+		"buttons": {
+			JOY_BUTTON_A: "generic_button.svg",
+			JOY_BUTTON_B: "generic_button.svg",
+			JOY_BUTTON_X: "generic_button.svg",
+			JOY_BUTTON_Y: "generic_button.svg",
+			JOY_BUTTON_DPAD_UP: "generic_button.svg",
+			JOY_BUTTON_DPAD_DOWN: "generic_button.svg",
+			JOY_BUTTON_DPAD_LEFT: "generic_button.svg",
+			JOY_BUTTON_DPAD_RIGHT: "generic_button.svg",
+			JOY_BUTTON_LEFT_SHOULDER: "generic_button_trigger_a.svg",
+			JOY_BUTTON_RIGHT_SHOULDER: "generic_button_trigger_b.svg",
+			JOY_BUTTON_LEFT_STICK: "generic_stick_press.svg",
+			JOY_BUTTON_RIGHT_STICK: "generic_stick_press.svg",
+			JOY_BUTTON_BACK: "generic_button.svg",
+			JOY_BUTTON_START: "generic_button.svg",
+			JOY_BUTTON_GUIDE: "generic_button.svg",
+			JOY_BUTTON_MISC1: "generic_button.svg",
+			JOY_BUTTON_PADDLE1: "generic_button.svg",
+			JOY_BUTTON_PADDLE2: "generic_button.svg",
+			JOY_BUTTON_PADDLE3: "generic_button.svg",
+			JOY_BUTTON_PADDLE4: "generic_button.svg",
+		},
+		"axes": {
+			JOY_AXIS_LEFT_X: {
+				"neutral": "generic_stick.svg",
+				"negative": "generic_stick_left.svg",
+				"positive": "generic_stick_right.svg",
+			},
+			JOY_AXIS_LEFT_Y: {
+				"neutral": "generic_stick.svg",
+				"negative": "generic_stick_up.svg",
+				"positive": "generic_stick_down.svg",
+			},
+			JOY_AXIS_RIGHT_X: {
+				"neutral": "generic_stick.svg",
+				"negative": "generic_stick_left.svg",
+				"positive": "generic_stick_right.svg",
+			},
+			JOY_AXIS_RIGHT_Y: {
+				"neutral": "generic_stick.svg",
+				"negative": "generic_stick_up.svg",
+				"positive": "generic_stick_down.svg",
+			},
+			JOY_AXIS_TRIGGER_LEFT: {"neutral": "generic_button_trigger_c.svg"},
+			JOY_AXIS_TRIGGER_RIGHT: {"neutral": "generic_button_trigger_c.svg"},
+		},
+	},
 }
 #================================================================================#
 
 # LOOKUP
 #================================================================================#
-# Narrows a detected family to one that has art. Unknown families render as Xbox.
+# Narrows a detected family to one that exists in the icon map.
+# Unknown families render as Xbox.
 static func resolve_family(family: String) -> String:
 	if family.is_empty():
 		family = InputDeviceTracker.current_family()
 	return family if _PROFILES.has(family) else InputDeviceTracker.FAMILY_XBOX
 
-static func path_for_button(button: JoyButton, family: String = "") -> String:
+static func path_for_button(button: JoyButton, family: String = "", outline: bool = false) -> String:
 	family = resolve_family(family)
 	var file := str(_buttons(family).get(button, ""))
 	if file.is_empty() and family != InputDeviceTracker.FAMILY_XBOX:
-		return path_for_button(button, InputDeviceTracker.FAMILY_XBOX)
-	return _join(family, file)
+		return path_for_button(button, InputDeviceTracker.FAMILY_XBOX, outline)
+	return _path(family, file, outline)
 
-static func path_for_axis(axis: JoyAxis, axis_value: float = 1.0, family: String = "") -> String:
+static func path_for_axis(
+	axis: JoyAxis,
+	axis_value: float = 1.0,
+	family: String = "",
+	outline: bool = false,
+) -> String:
 	family = resolve_family(family)
 	var file := _axis_file(axis, axis_value, family)
 	if file.is_empty() and family != InputDeviceTracker.FAMILY_XBOX:
-		return path_for_axis(axis, axis_value, InputDeviceTracker.FAMILY_XBOX)
-	return _join(family, file)
+		return path_for_axis(axis, axis_value, InputDeviceTracker.FAMILY_XBOX, outline)
+	return _path(family, file, outline)
 
-static func path_for_device(family: String = "") -> String:
+static func path_for_device(family: String = "", outline: bool = false) -> String:
 	family = resolve_family(family)
-	return _join(family, str(_PROFILES[family].get("device", "")))
+	return _path(family, str(_PROFILES[family].get("device", "")), outline)
 
-static func texture_for_button(button: JoyButton, family: String = "") -> Texture2D:
-	return IconPaths.load_texture(path_for_button(button, family))
+static func texture_for_button(
+	button: JoyButton,
+	family: String = "",
+	outline: bool = false,
+) -> Texture2D:
+	return IconPaths.load_texture(path_for_button(button, family, outline))
 
 static func texture_for_axis(
 	axis: JoyAxis,
 	axis_value: float = 1.0,
 	family: String = "",
+	outline: bool = false,
 ) -> Texture2D:
-	return IconPaths.load_texture(path_for_axis(axis, axis_value, family))
+	return IconPaths.load_texture(path_for_axis(axis, axis_value, family, outline))
 
-static func texture_for_device(family: String = "") -> Texture2D:
-	return IconPaths.load_texture(path_for_device(family))
+static func texture_for_device(family: String = "", outline: bool = false) -> Texture2D:
+	return IconPaths.load_texture(path_for_device(family, outline))
 #================================================================================#
 
 # INTERNAL
@@ -424,6 +496,24 @@ static func _axis_file(axis: JoyAxis, axis_value: float, family: String) -> Stri
 	var slot := "negative" if axis_value < 0.0 else "positive"
 	var file := str((entry as Dictionary).get(slot, ""))
 	return file if not file.is_empty() else str((entry as Dictionary).get("neutral", ""))
+
+static func _path(family: String, file: String, outline: bool) -> String:
+	if file.is_empty():
+		return ""
+	var filled := _join(family, file)
+	if not outline:
+		return filled
+	var outline_file := _outline_file(family, file)
+	var outline_path := _join(family, outline_file)
+	if ResourceLoader.exists(outline_path):
+		return outline_path
+	return filled
+
+static func _outline_file(family: String, file: String) -> String:
+	var override: Variant = _OUTLINE_OVERRIDES.get(family, {}).get(file, "")
+	if not str(override).is_empty():
+		return str(override)
+	return file.get_basename() + "_outline." + file.get_extension()
 
 static func _join(family: String, file: String) -> String:
 	if file.is_empty():
