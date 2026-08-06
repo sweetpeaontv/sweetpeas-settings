@@ -1,0 +1,62 @@
+[gd_scene format=3 uid="uid://cdlcg5uhf1qjq"]
+
+[ext_resource type="PackedScene" uid="uid://t2t0okcui834" path="res://addons/sweetpeas-settings/components/badge/badge.tscn" id="1_dwjjj"]
+[ext_resource type="Script" uid="uid://f3a6m7hpwk6d" path="res://addons/sweetpeas-settings/components/icon/icon_button.gd" id="2_icon"]
+
+[node name="IconButton" type="Control" unique_id=1945432947]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("2_icon")
+
+[node name="Button" type="Button" parent="." unique_id=381981753]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Content" type="MarginContainer" parent="Button" unique_id=772670279]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="Center" type="CenterContainer" parent="Button/Content" unique_id=248399769]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Button/Content/Center" unique_id=818121417]
+visible = false
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="Button/Content/Center" unique_id=93238377]
+layout_mode = 2
+mouse_filter = 2
+text = "—"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Badge" parent="." unique_id=1158502225 instance=ExtResource("1_dwjjj")]
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -24.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = 24.0
+grow_horizontal = 0

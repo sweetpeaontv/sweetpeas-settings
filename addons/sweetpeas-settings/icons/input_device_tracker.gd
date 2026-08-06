@@ -12,12 +12,14 @@ const FAMILY_SWITCH: String = "nintendo-switch"
 const FAMILY_SWITCH_2: String = "nintendo-switch-2"
 const FAMILY_STEAM_DECK: String = "steam-deck"
 const FAMILY_STEAM_CONTROLLER: String = "steam-controller"
+const FAMILY_STEAM_CONTROLLER_2: String = "steam-controller-2"
 
 const _NAME_HINTS: Array = [
 	[["steam deck", "steamdeck"], FAMILY_STEAM_DECK],
+	[["steam controller 2", "steam controller (2025)"], FAMILY_STEAM_CONTROLLER_2],
 	[["steam controller"], FAMILY_STEAM_CONTROLLER],
 	[["dualsense", "dualshock", "playstation", "ps5", "ps4", "ps3"], FAMILY_PLAYSTATION],
-	[["switch 2"], FAMILY_SWITCH_2],
+	[["switch 2", "switch2"], FAMILY_SWITCH_2],
 	[["switch", "joy-con", "joycon", "pro controller"], FAMILY_SWITCH],
 	[["xbox", "xinput", "microsoft"], FAMILY_XBOX],
 	[["generic"], FAMILY_GENERIC],
@@ -64,7 +66,7 @@ static func last_device_id() -> int:
 static func current_family() -> String:
 	if not _family_dirty:
 		return _cached_family
-	_cached_family = _normalize_family(family_for_device(last_device_id()))
+	_cached_family = family_for_device(last_device_id())
 	_family_dirty = false
 	return _cached_family
 
@@ -83,20 +85,6 @@ static func family_for_name(device_name: String) -> String:
 			if token in name:
 				return hint[1]
 	return FAMILY_XBOX
-
-static func resolve_family(family: String) -> String:
-	if family.is_empty():
-		return current_family()
-	return _normalize_family(family)
-
-static func _normalize_family(family: String) -> String:
-	match family:
-		FAMILY_SWITCH_2:
-			return FAMILY_SWITCH
-		FAMILY_STEAM_CONTROLLER, FAMILY_GENERIC:
-			return FAMILY_XBOX
-		_:
-			return family
 
 static func _ensure_pads() -> void:
 	if not _pads_loaded:

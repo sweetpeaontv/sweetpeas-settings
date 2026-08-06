@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://c0uhrmy4gxqqv"]
+
+[ext_resource type="Script" uid="uid://cc02g4lqbsgs3" path="res://addons/sweetpeas-settings/components/value-editors/keybind/keybind-slot/keybind_slot.gd" id="1_slot"]
+[ext_resource type="PackedScene" uid="uid://cdlcg5uhf1qjq" path="res://addons/sweetpeas-settings/components/icon/icon-button.tscn" id="2_icon"]
+
+[node name="KeybindSlot" type="Control" unique_id=1868531827]
+custom_minimum_size = Vector2(72, 40)
+layout_mode = 3
+anchors_preset = 0
+size_flags_horizontal = 3
+script = ExtResource("1_slot")
+
+[node name="IconButton" parent="." unique_id=208837392 instance=ExtResource("2_icon")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3

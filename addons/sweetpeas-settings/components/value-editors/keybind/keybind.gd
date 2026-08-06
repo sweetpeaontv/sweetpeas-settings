@@ -1,71 +1,95 @@
 class_name KeybindEditor
 extends HBoxContainer
+"""
+The keybind control for one setting: listens for a new bind, hosts the pairs grid and add button,
+and emits value_changed when the binding changes.
+"""
 
 signal value_changed(value: Dictionary)
 
-const _AXIS_DEADZONE := 0.5
-const _UNBOUND_TEXT := "—"
+const _AXIS_DEADZONE: float = 0.5
 
-var _keyboard_button: Button
-var _keyboard_icon: TextureRect
-var _keyboard_label: Label
-var _controller_button: Button
-var _controller_icon: TextureRect
-var _controller_label: Label
+var _pairs: KeybindPairs
+var _add_button: IconButton
 
-var _binding: Dictionary = InputBinding.empty_binding()
+var _setting_key: String = ""
 var _listening_column: String = ""
-var _updating := false
-var _signals_connected := false
+var _listening_index: int = -1
+var _updating: bool = false
+var _signals_connected: bool = false
+var _disabled: bool = false
 var _focus_restore: Control = null
 
+# INIT
+#================================================================================#
 func _ready() -> void:
 	alignment = BoxContainer.ALIGNMENT_CENTER
 	_ensure_nodes()
 	_connect_signals()
 	set_process_input(false)
+	_pairs.sync()
+#================================================================================#
 
-func configure(_setting: Dictionary) -> void:
+# API
+#================================================================================#
+func configure(setting: Dictionary) -> void:
 	_ensure_nodes()
 	_connect_signals()
+	_setting_key = str(setting.get("key", ""))
+	_pairs.set_setting_key(_setting_key)
 
 func get_value() -> Dictionary:
-	return InputBinding.coerce(_binding)
+	_ensure_nodes()
+	return _pairs.get_binding()
 
 func set_value(value: Variant) -> void:
 	_ensure_nodes()
 	_updating = true
-	_binding = InputBinding.coerce(value)
-	_listening_column = ""
-	_focus_restore = null
-	set_process_input(false)
-	_refresh_slots()
+	_stop_listening(false, false)
+	_pairs.set_binding(value)
 	_updating = false
 
+func set_conflicts(conflicts: Dictionary) -> void:
+	_ensure_nodes()
+	_pairs.set_conflicts(conflicts if conflicts != null else {}, _setting_key)
+
+func set_disabled(disabled: bool) -> void:
+	_ensure_nodes()
+	_disabled = disabled
+	if _add_button != null:
+		_add_button.set_disabled(disabled)
+	_pairs.set_disabled(disabled)
+	modulate.a = 0.45 if disabled else 1.0
+#================================================================================#
+
+# INPUT
+#================================================================================#
 func _input(event: InputEvent) -> void:
-	if _listening_column.is_empty():
+	if _listening_column.is_empty() or _listening_index < 0:
 		return
 
 	Icons.note_input_event(event)
 
-	if _is_cancel_event(event):
-		_stop_listening(false)
-		get_viewport().set_input_as_handled()
-		return
+	# _input runs before GUI, so mouse clicks on the clear badge would otherwise
+	# be captured as a mouse-button bind. Let the badge handle those.
+	if event is InputEventMouseButton:
+		var mouse: InputEventMouseButton = event as InputEventMouseButton
+		if _pairs.is_clear_badge_at(_listening_column, _listening_index, mouse.global_position):
+			return
 
 	if not _is_pressed_bind_event(event):
 		return
 
-	var column := _column_for_event(event)
+	var column: String = InputBinding.column_for_event(event)
 	if column != _listening_column:
 		return
 
 	if event is InputEventJoypadMotion:
-		var motion := event as InputEventJoypadMotion
+		var motion: InputEventJoypadMotion = event as InputEventJoypadMotion
 		if absf(motion.axis_value) < _AXIS_DEADZONE:
 			return
 
-		var normalized := motion.duplicate() as InputEventJoypadMotion
+		var normalized: InputEventJoypadMotion = motion.duplicate() as InputEventJoypadMotion
 		normalized.axis_value = signf(motion.axis_value)
 		event = normalized
 
@@ -73,114 +97,116 @@ func _input(event: InputEvent) -> void:
 	if encoded == null:
 		return
 
-	_binding[_listening_column] = [encoded]
+	_pairs.set_slot_event(_listening_column, _listening_index, encoded)
 	_stop_listening(true)
 	get_viewport().set_input_as_handled()
+#================================================================================#
 
+# SETUP
+#================================================================================#
 func _ensure_nodes() -> void:
-	if _keyboard_button != null:
+	if _pairs != null:
 		return
 
-	_keyboard_button = $KeyboardSlot
-	_keyboard_icon = $KeyboardSlot/Margin/Content/Icon
-	_keyboard_label = $KeyboardSlot/Margin/Content/Label
-	_controller_button = $ControllerSlot
-	_controller_icon = $ControllerSlot/Margin/Content/Icon
-	_controller_label = $ControllerSlot/Margin/Content/Label
+	_pairs = $Pairs as KeybindPairs
+	_add_button = $AddButton as IconButton
+	_add_button.custom_minimum_size = Vector2(40, 40)
+	_add_button.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	_add_button.set_content_margins(0)
+	_add_button.set_icon_size(Vector2(40, 40))
+	var plus: Texture2D = Icons.load_texture(Icons.join("keyboard-mouse", "keyboard_plus.svg"))
+	if plus != null:
+		_add_button.set_icon(plus)
+		_add_button.set_text("")
+	else:
+		_add_button.set_text("+")
+	_add_button.tooltip_text = "Add binding"
 
 func _connect_signals() -> void:
 	if _signals_connected:
 		return
 
-	_keyboard_button.pressed.connect(_on_slot_pressed.bind(InputBinding.KEYBOARD))
-	_controller_button.pressed.connect(_on_slot_pressed.bind(InputBinding.CONTROLLER))
+	_ensure_nodes()
+	_add_button.pressed.connect(_on_add_pressed)
+	_pairs.slot_pressed.connect(_on_slot_pressed)
+	_pairs.clear_pressed.connect(_on_clear_pressed)
 	_signals_connected = true
+#================================================================================#
 
-func _on_slot_pressed(column: String) -> void:
-	if _updating:
+# SIGNAL HANDLERS
+#================================================================================#
+func _on_add_pressed() -> void:
+	if _updating or _disabled:
+		return
+	if not _listening_column.is_empty():
+		_stop_listening(false)
+	_pairs.add_row()
+
+func _on_slot_pressed(column: String, index: int) -> void:
+	if _updating or _disabled:
 		return
 
-	if _listening_column == column:
+	if _listening_column == column and _listening_index == index:
 		_stop_listening(false)
 		return
 
 	if not _listening_column.is_empty():
 		_stop_listening(false)
 
-	_start_listening(column)
+	_start_listening(column, index)
 
-func _start_listening(column: String) -> void:
+func _on_clear_pressed(column: String, index: int) -> void:
+	if _updating or _disabled:
+		return
+
+	if not _pairs.clear_slot(column, index):
+		# Nothing to clear — just leave listen mode.
+		if _listening_column == column and _listening_index == index:
+			_stop_listening(false)
+		return
+
+	_stop_listening(false, false)
+	# Defer sync so we don't free the badge/slot still inside gui_input.
+	call_deferred("_finish_clear")
+
+func _finish_clear() -> void:
+	_pairs.sync()
+	_emit_value_changed()
+#================================================================================#
+
+# LISTENING
+#================================================================================#
+func _start_listening(column: String, index: int) -> void:
 	_listening_column = column
+	_listening_index = index
 	# Capture in _input before focused Controls consume ui_accept (e.g. controller A).
 	_focus_restore = get_viewport().gui_get_focus_owner()
 	if _focus_restore != null:
 		_focus_restore.release_focus()
 	set_process_input(true)
-	_refresh_slots()
+	_pairs.set_listening(column, index)
 
-func _stop_listening(emit_change: bool) -> void:
+func _stop_listening(emit_change: bool, restore_focus: bool = true) -> void:
 	_listening_column = ""
+	_listening_index = -1
 	set_process_input(false)
-	_refresh_slots()
-	if _focus_restore != null and is_instance_valid(_focus_restore):
+	if restore_focus and _focus_restore != null and is_instance_valid(_focus_restore):
 		_focus_restore.grab_focus()
 	_focus_restore = null
-	if emit_change and not _updating:
+	_pairs.set_listening("", -1)
+	if emit_change:
+		_emit_value_changed()
+
+func _emit_value_changed() -> void:
+	if not _updating:
 		value_changed.emit(get_value())
+#================================================================================#
 
-func _refresh_slots() -> void:
-	_refresh_slot(
-		InputBinding.KEYBOARD,
-		_keyboard_icon,
-		_keyboard_label,
-	)
-	_refresh_slot(
-		InputBinding.CONTROLLER,
-		_controller_icon,
-		_controller_label,
-	)
-
-func _refresh_slot(column: String, icon: TextureRect, label: Label) -> void:
-	if _listening_column == column:
-		icon.texture = _waiting_texture()
-		icon.visible = icon.texture != null
-		label.visible = not icon.visible
-		label.text = "..."
-		return
-
-	var column_events: Array = _binding.get(column, [])
-	if column_events.is_empty():
-		icon.texture = null
-		icon.visible = false
-		label.visible = true
-		label.text = _UNBOUND_TEXT
-		return
-
-	var event := InputBinding.decode_event(column_events[0])
-	var texture := Icons.texture_for_event(event) if event else null
-	if texture != null:
-		icon.texture = texture
-		icon.visible = true
-		label.visible = false
-		label.text = ""
-		return
-
-	icon.texture = null
-	icon.visible = false
-	label.visible = true
-	label.text = _fallback_label(event)
-
-func _waiting_texture() -> Texture2D:
-	return Icons.load_texture(Icons.join("keyboard-mouse", "keyboard_any.svg"))
-
-func _is_cancel_event(event: InputEvent) -> bool:
-	if event is InputEventKey and event.is_pressed() and not event.is_echo():
-		return (event as InputEventKey).keycode == KEY_ESCAPE
-	return false
-
+# HELPERS
+#================================================================================#
 func _is_pressed_bind_event(event: InputEvent) -> bool:
 	if event is InputEventKey:
-		var key := event as InputEventKey
+		var key: InputEventKey = event as InputEventKey
 		return key.is_pressed() and not key.is_echo()
 	if event is InputEventMouseButton:
 		return (event as InputEventMouseButton).is_pressed()
@@ -189,43 +215,4 @@ func _is_pressed_bind_event(event: InputEvent) -> bool:
 	if event is InputEventJoypadMotion:
 		return true
 	return false
-
-func _column_for_event(event: InputEvent) -> String:
-	if event is InputEventKey or event is InputEventMouseButton:
-		return InputBinding.KEYBOARD
-	if event is InputEventJoypadButton or event is InputEventJoypadMotion:
-		return InputBinding.CONTROLLER
-	return ""
-
-func _fallback_label(event: InputEvent) -> String:
-	if event == null:
-		return _UNBOUND_TEXT
-	if event is InputEventKey:
-		var key := event as InputEventKey
-		var code: Key = key.physical_keycode if key.physical_keycode != KEY_NONE else key.keycode
-		var text := OS.get_keycode_string(code)
-		return text if not text.is_empty() else _UNBOUND_TEXT
-	if event is InputEventMouseButton:
-		match (event as InputEventMouseButton).button_index:
-			MOUSE_BUTTON_LEFT:
-				return "LMB"
-			MOUSE_BUTTON_RIGHT:
-				return "RMB"
-			MOUSE_BUTTON_MIDDLE:
-				return "MMB"
-			MOUSE_BUTTON_WHEEL_UP:
-				return "Wheel Up"
-			MOUSE_BUTTON_WHEEL_DOWN:
-				return "Wheel Down"
-			MOUSE_BUTTON_XBUTTON1:
-				return "Mouse 4"
-			MOUSE_BUTTON_XBUTTON2:
-				return "Mouse 5"
-			_:
-				return "Mouse"
-	if event is InputEventJoypadButton:
-		return "Btn %d" % (event as InputEventJoypadButton).button_index
-	if event is InputEventJoypadMotion:
-		var motion := event as InputEventJoypadMotion
-		return "Axis %d" % motion.axis
-	return _UNBOUND_TEXT
+#================================================================================#

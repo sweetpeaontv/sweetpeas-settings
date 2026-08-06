@@ -14,6 +14,8 @@ var _section_components: Dictionary = {}
 const SETTING_ROW = preload("uid://c2cbsjwqa83i")
 const SETTINGS_PANEL = preload("uid://14pcikrgghwh")
 
+# INIT
+#================================================================================#
 func _ready() -> void:
 	for section in SettingsManager.schema.sections:
 		_build_section(section)
@@ -24,9 +26,13 @@ func _ready() -> void:
 	tab_bar.tab_changed.connect(_on_tab_changed)
 	SettingsManager.setting_changed.connect(_on_setting_changed)
 	_refresh_disabled_states()
+	_refresh_keybind_conflicts()
 	body.show()
 	_on_tab_changed(0)
+#================================================================================#
 
+# BUILD
+#================================================================================#
 func _build_section(section: Dictionary) -> void:
 	_sections.append(section)
 	tab_bar.add_tab(_section_title(section))
@@ -92,7 +98,10 @@ func _wire_section_reset_footers(section_id: String, footer_controls: Array[Cont
 		if not control.has_signal("reset_requested"):
 			continue
 		control.connect("reset_requested", _on_section_reset_requested.bind(section_id))
+#================================================================================#
 
+# SIGNAL HANDLERS
+#================================================================================#
 func _on_row_value_changed(value: Variant, key: String) -> void:
 	SettingsManager.set_setting(key, value)
 
@@ -105,6 +114,28 @@ func _on_setting_changed(key: String, value: Variant) -> void:
 	if _rows.has(key):
 		_rows[key].set_value(value)
 	_refresh_disabled_states()
+	if _is_keybind_setting(key):
+		_refresh_keybind_conflicts()
+
+func _on_tab_changed(idx: int) -> void:
+	_panels[_active_tab].hide()
+	_panels[idx].show()
+	_active_tab = idx
+#================================================================================#
+
+# REFRESH
+#================================================================================#
+func _refresh_keybind_conflicts() -> void:
+	var conflicts := SettingsManager.get_keybind_conflicts()
+	for key in _rows:
+		var row = _rows[key]
+		if row.has_method("refresh_keybind_conflicts"):
+			row.refresh_keybind_conflicts(conflicts)
+
+func _is_keybind_setting(key: String) -> bool:
+	if not SettingsManager.schema.has_key(key):
+		return false
+	return str(SettingsManager.schema.get_setting(key).get("type", "")) == "keybind"
 
 func _refresh_localized_text() -> void:
 	for index in _sections.size():
@@ -115,11 +146,15 @@ func _refresh_localized_text() -> void:
 		for control in _section_components[section_id]:
 			if control.has_method("refresh_locale"):
 				control.refresh_locale()
+	_refresh_keybind_conflicts()
 
 func _refresh_disabled_states() -> void:
 	for key in _rows:
 		_rows[key].set_disabled(_is_setting_disabled(key))
+#================================================================================#
 
+# HELPERS
+#================================================================================#
 func _is_setting_disabled(key: String) -> bool:
 	var setting: Dictionary = SettingsManager.schema.get_setting(key)
 	var conditions: Variant = setting.get("disabled_when", {})
@@ -155,8 +190,4 @@ func _section_title(section: Dictionary) -> String:
 	if translated != id:
 		return translated
 	return str(section.get("label", id))
-
-func _on_tab_changed(idx: int) -> void:
-	_panels[_active_tab].hide()
-	_panels[idx].show()
-	_active_tab = idx
+#================================================================================#

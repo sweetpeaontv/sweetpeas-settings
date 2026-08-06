@@ -73,6 +73,10 @@ func refresh_locale() -> void:
 	
 	# defensive application of disabled state upon refresh
 	_apply_disabled()
+
+func refresh_keybind_conflicts(conflicts: Dictionary) -> void:
+	if _editor != null and _editor.has_method("set_conflicts"):
+		_editor.set_conflicts(conflicts)
 #================================================================================#
 
 # INTERNAL

@@ -1,9 +1,7 @@
 class_name KeybindValueEditor
 extends ValueEditor
 
-const KEYBIND_SCENE := preload(
-	"res://addons/sweetpeas-settings/components/value-editors/keybind/keybind.tscn"
-)
+const KEYBIND_SCENE = preload("uid://74rotn6prfqv")
 
 var _keybind: KeybindEditor
 
@@ -22,6 +20,12 @@ func get_value() -> Variant:
 
 func set_value(value: Variant) -> void:
 	_keybind.set_value(value)
+
+func set_conflicts(conflicts: Dictionary) -> void:
+	_keybind.set_conflicts(conflicts)
+
+func set_disabled(disabled: bool) -> void:
+	_keybind.set_disabled(disabled)
 
 func _on_value_changed(value: Dictionary) -> void:
 	value_changed.emit(value)

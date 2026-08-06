@@ -1,86 +1,18 @@
-[gd_scene load_steps=2 format=3 uid="uid://c8keybind_editor01"]
+[gd_scene format=3 uid="uid://74rotn6prfqv"]
 
-[ext_resource type="Script" path="res://addons/sweetpeas-settings/components/value-editors/keybind/keybind.gd" id="1_keybind"]
+[ext_resource type="Script" uid="uid://dsakjl531sxt5" path="res://addons/sweetpeas-settings/components/value-editors/keybind/keybind.gd" id="1_keybind"]
+[ext_resource type="PackedScene" uid="uid://cdlcg5uhf1qjq" path="res://addons/sweetpeas-settings/components/icon/icon-button.tscn" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://b8kpairs7xq2m" path="res://addons/sweetpeas-settings/components/value-editors/keybind/keybind-pairs/keybind_pairs.tscn" id="3_pairs"]
 
-[node name="KeybindEditor" type="HBoxContainer"]
-layout_mode = 3
-anchors_preset = 0
-theme_override_constants/separation = 8
+[node name="KeybindEditor" type="HBoxContainer" unique_id=203564894]
+theme_override_constants/separation = 6
 alignment = 1
 script = ExtResource("1_keybind")
 
-[node name="KeyboardSlot" type="Button" parent="."]
-custom_minimum_size = Vector2(72, 40)
+[node name="Pairs" parent="." unique_id=1866657796 instance=ExtResource("3_pairs")]
 layout_mode = 2
-size_flags_horizontal = 3
-focus_mode = 2
 
-[node name="Margin" type="MarginContainer" parent="KeyboardSlot"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-theme_override_constants/margin_left = 4
-theme_override_constants/margin_top = 4
-theme_override_constants/margin_right = 4
-theme_override_constants/margin_bottom = 4
-
-[node name="Content" type="CenterContainer" parent="KeyboardSlot/Margin"]
+[node name="AddButton" parent="." unique_id=821821539 instance=ExtResource("2_icon")]
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-mouse_filter = 2
-
-[node name="Icon" type="TextureRect" parent="KeyboardSlot/Margin/Content"]
-custom_minimum_size = Vector2(28, 28)
-layout_mode = 2
-mouse_filter = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Label" type="Label" parent="KeyboardSlot/Margin/Content"]
-visible = false
-layout_mode = 2
-mouse_filter = 2
-text = "—"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="ControllerSlot" type="Button" parent="."]
-custom_minimum_size = Vector2(72, 40)
-layout_mode = 2
-size_flags_horizontal = 3
-focus_mode = 2
-
-[node name="Margin" type="MarginContainer" parent="ControllerSlot"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-theme_override_constants/margin_left = 4
-theme_override_constants/margin_top = 4
-theme_override_constants/margin_right = 4
-theme_override_constants/margin_bottom = 4
-
-[node name="Content" type="CenterContainer" parent="ControllerSlot/Margin"]
-layout_mode = 2
-mouse_filter = 2
-
-[node name="Icon" type="TextureRect" parent="ControllerSlot/Margin/Content"]
-custom_minimum_size = Vector2(28, 28)
-layout_mode = 2
-mouse_filter = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Label" type="Label" parent="ControllerSlot/Margin/Content"]
-visible = false
-layout_mode = 2
-mouse_filter = 2
-text = "—"
-horizontal_alignment = 1
-vertical_alignment = 1
+size_flags_vertical = 0

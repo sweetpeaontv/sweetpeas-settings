@@ -6,6 +6,8 @@ extends RefCounted
 const KEYBOARD := "keyboard"
 const CONTROLLER := "controller"
 
+# API
+#================================================================================#
 static func empty_binding() -> Dictionary:
 	return {KEYBOARD: [], CONTROLLER: []}
 
@@ -18,7 +20,7 @@ static func snapshot_action(action: StringName) -> Dictionary:
 		var encoded: Variant = encode_event(event)
 		if encoded == null:
 			continue
-		var column := _column(event)
+		var column := column_for_event(event)
 		if not column.is_empty():
 			binding[column].append(encoded)
 	return binding
@@ -62,6 +64,12 @@ static func same_event(a: Variant, b: Variant) -> bool:
 		return false
 	return left == right
 
+static func event_fingerprint(encoded: Variant) -> String:
+	var normalized := _normalize_event(encoded)
+	if normalized == null:
+		return ""
+	return JSON.stringify(normalized)
+
 static func binding_contains_event(binding: Variant, encoded: Variant) -> bool:
 	var needle := _normalize_event(encoded)
 	if needle == null:
@@ -88,6 +96,16 @@ static func remove_event(binding: Variant, encoded: Variant) -> Dictionary:
 			result[column].append(entry)
 	return result
 
+static func column_for_event(event: InputEvent) -> String:
+	if event is InputEventKey or event is InputEventMouseButton:
+		return KEYBOARD
+	if event is InputEventJoypadButton or event is InputEventJoypadMotion:
+		return CONTROLLER
+	return ""
+#================================================================================#
+
+# ENCODE / DECODE
+#================================================================================#
 static func encode_event(event: InputEvent) -> Variant:
 	if event is InputEventKey:
 		var e := event as InputEventKey
@@ -138,14 +156,10 @@ static func decode_event(encoded: Variant) -> InputEvent:
 			e.axis_value = float(data.get("axis_value", 0.0))
 			return e
 	return null
+#================================================================================#
 
-static func _column(event: InputEvent) -> String:
-	if event is InputEventKey or event is InputEventMouseButton:
-		return KEYBOARD
-	if event is InputEventJoypadButton or event is InputEventJoypadMotion:
-		return CONTROLLER
-	return ""
-
+# INTERNAL
+#================================================================================#
 static func _normalize_column(raw: Variant) -> Array:
 	var out: Array = []
 	if not raw is Array:
@@ -158,11 +172,24 @@ static func _normalize_column(raw: Variant) -> Array:
 
 # Rebuild via decode/encode so partial or oddly-typed dicts match the
 # canonical shape from encode_event (same keys/types for dict equality).
+# Keyboard events also canonicalize keycode/physical_keycode to one code so
+# schema defaults and live presses fingerprint the same.
 static func _normalize_event(encoded: Variant) -> Variant:
 	var event := decode_event(encoded)
 	if event == null:
 		return null
-	return encode_event(event)
+	var normalized: Variant = encode_event(event)
+	if not normalized is Dictionary:
+		return normalized
+	var data: Dictionary = normalized
+	if str(data.get("type", "")) != "key":
+		return data
+	var code: int = int(data.get("physical_keycode", 0))
+	if code == int(KEY_NONE):
+		code = int(data.get("keycode", 0))
+	data["keycode"] = code
+	data["physical_keycode"] = code
+	return data
 
 static func _with_mods(data: Dictionary, event: InputEventWithModifiers) -> Dictionary:
 	data["shift"] = event.shift_pressed
@@ -176,3 +203,4 @@ static func _read_mods(event: InputEventWithModifiers, data: Dictionary) -> void
 	event.ctrl_pressed = bool(data.get("ctrl", false))
 	event.alt_pressed = bool(data.get("alt", false))
 	event.meta_pressed = bool(data.get("meta", false))
+#================================================================================#

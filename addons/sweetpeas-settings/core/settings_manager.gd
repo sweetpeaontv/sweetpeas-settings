@@ -60,13 +60,7 @@ func set_setting(key: String, value: Variant, persist: bool = true) -> void:
 		push_error(_unknown_key_message(key))
 		return
 
-	var victims_changed := false
-	if str(schema.get_setting(key).get("type", "")) == "keybind":
-		victims_changed = _resolve_keybind_conflicts(key, value)
-
 	if not data.set_value(key, value):
-		if victims_changed and persist:
-			_queue_save()
 		return
 
 	var applied: Variant = data.get_value(key)
@@ -74,6 +68,30 @@ func set_setting(key: String, value: Variant, persist: bool = true) -> void:
 	setting_changed.emit(key, applied)
 	if persist:
 		_queue_save()
+
+func get_keybind_conflicts() -> Dictionary:
+	var owners: Dictionary = {}
+	for key in schema.keys():
+		if str(schema.get_setting(key).get("type", "")) != "keybind":
+			continue
+		var binding := InputBinding.coerce(data.get_value(key))
+		for column in [InputBinding.KEYBOARD, InputBinding.CONTROLLER]:
+			for encoded in binding[column]:
+				var fingerprint := InputBinding.event_fingerprint(encoded)
+				if fingerprint.is_empty():
+					continue
+				if not owners.has(fingerprint):
+					owners[fingerprint] = []
+				var keys: Array = owners[fingerprint]
+				if key not in keys:
+					keys.append(key)
+
+	var conflicts: Dictionary = {}
+	for fingerprint in owners:
+		var keys: Array = owners[fingerprint]
+		if keys.size() >= 2:
+			conflicts[fingerprint] = keys.duplicate()
+	return conflicts
 
 func reset_section(section_id: String) -> void:
 	_announce(data.reset_section(section_id))
@@ -123,45 +141,6 @@ func _register_keybind_appliers() -> void:
 		if str(setting.get("type", "")) != "keybind":
 			continue
 		_applier.register(key, _applier._apply_keybind)
-
-# Steal matching events from other keybind settings before binding owner_key.
-# Returns true if any victim binding changed.
-func _resolve_keybind_conflicts(owner_key: String, value: Variant) -> bool:
-	var incoming := InputBinding.coerce(value)
-	var events: Array = []
-	for column in [InputBinding.KEYBOARD, InputBinding.CONTROLLER]:
-		for encoded in incoming[column]:
-			events.append(encoded)
-
-	if events.is_empty():
-		return false
-
-	var any_changed := false
-	for key in schema.keys():
-		if key == owner_key:
-			continue
-		if str(schema.get_setting(key).get("type", "")) != "keybind":
-			continue
-
-		var current: Variant = data.get_value(key)
-		var cleaned: Variant = current
-		var touched := false
-		for encoded in events:
-			if InputBinding.binding_contains_event(cleaned, encoded):
-				cleaned = InputBinding.remove_event(cleaned, encoded)
-				touched = true
-
-		if not touched:
-			continue
-		if not data.set_value(key, cleaned):
-			continue
-
-		var applied: Variant = data.get_value(key)
-		_applier.apply(key, applied)
-		setting_changed.emit(key, applied)
-		any_changed = true
-
-	return any_changed
 
 func _queue_save() -> void:
 	_dirty = true

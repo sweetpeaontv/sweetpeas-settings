@@ -1,85 +1,404 @@
 # controller_icon_map.gd
-# Maps JoyButton / JoyAxis + family to SVG paths.
+# Maps JoyButton / JoyAxis to an icon path for a given controller family.
+
 class_name ControllerIconMap
 extends RefCounted
 
-const FAMILY_XBOX = InputDeviceTracker.FAMILY_XBOX
-const FAMILY_PLAYSTATION = InputDeviceTracker.FAMILY_PLAYSTATION
-const FAMILY_SWITCH = InputDeviceTracker.FAMILY_SWITCH
-const FAMILY_STEAM_DECK = InputDeviceTracker.FAMILY_STEAM_DECK
+const FAMILY_XBOX := InputDeviceTracker.FAMILY_XBOX
+const FAMILY_PLAYSTATION := InputDeviceTracker.FAMILY_PLAYSTATION
+const FAMILY_SWITCH := InputDeviceTracker.FAMILY_SWITCH
+const FAMILY_SWITCH_2 := InputDeviceTracker.FAMILY_SWITCH_2
+const FAMILY_STEAM_DECK := InputDeviceTracker.FAMILY_STEAM_DECK
+const FAMILY_STEAM_CONTROLLER := InputDeviceTracker.FAMILY_STEAM_CONTROLLER
+const FAMILY_STEAM_CONTROLLER_2 := InputDeviceTracker.FAMILY_STEAM_CONTROLLER_2
 
-const _AXIS_DEADZONE = 0.5
-const _PREFIX = {
-	FAMILY_XBOX: "xbox",
-	FAMILY_PLAYSTATION: "playstation",
-	FAMILY_SWITCH: "switch",
-	FAMILY_STEAM_DECK: "steamdeck",
-}
+const _AXIS_DEADZONE := 0.5
 
-const _FACE = {
-	FAMILY_XBOX: ["a", "b", "x", "y"],
-	FAMILY_STEAM_DECK: ["a", "b", "x", "y"],
-	FAMILY_SWITCH: ["b", "a", "y", "x"],
-	FAMILY_PLAYSTATION: ["cross", "circle", "square", "triangle"],
-}
-
-# back / start / guide / misc
-const _SYSTEM = {
+# PROFILES
+#================================================================================#
+# dir      folder under icons/ holding this family's art
+# device   whole-controller image, used by the controls header
+# buttons  JoyButton -> filename
+# axes     JoyAxis -> { neutral, negative, positive }; triggers use neutral only
+const _PROFILES := {
 	FAMILY_XBOX: {
-		"back": "xbox_button_view.svg",
-		"start": "xbox_button_menu.svg",
-		"guide": "xbox_guide.svg",
-		"misc": "xbox_button_share.svg",
+		"dir": "xbox-series",
+		"device": "controller_xboxseries.svg",
+		"buttons": {
+			JOY_BUTTON_A: "xbox_button_a.svg",
+			JOY_BUTTON_B: "xbox_button_b.svg",
+			JOY_BUTTON_X: "xbox_button_x.svg",
+			JOY_BUTTON_Y: "xbox_button_y.svg",
+			JOY_BUTTON_DPAD_UP: "xbox_dpad_up.svg",
+			JOY_BUTTON_DPAD_DOWN: "xbox_dpad_down.svg",
+			JOY_BUTTON_DPAD_LEFT: "xbox_dpad_left.svg",
+			JOY_BUTTON_DPAD_RIGHT: "xbox_dpad_right.svg",
+			JOY_BUTTON_LEFT_SHOULDER: "xbox_lb.svg",
+			JOY_BUTTON_RIGHT_SHOULDER: "xbox_rb.svg",
+			JOY_BUTTON_LEFT_STICK: "xbox_stick_l_press.svg",
+			JOY_BUTTON_RIGHT_STICK: "xbox_stick_r_press.svg",
+			JOY_BUTTON_BACK: "xbox_button_view.svg",
+			JOY_BUTTON_START: "xbox_button_menu.svg",
+			JOY_BUTTON_GUIDE: "xbox_guide.svg",
+			JOY_BUTTON_MISC1: "xbox_button_share.svg",
+			JOY_BUTTON_PADDLE1: "xbox_elite_paddle_top_left.svg",
+			JOY_BUTTON_PADDLE2: "xbox_elite_paddle_top_right.svg",
+			JOY_BUTTON_PADDLE3: "xbox_elite_paddle_bottom_left.svg",
+			JOY_BUTTON_PADDLE4: "xbox_elite_paddle_bottom_right.svg",
+		},
+		"axes": {
+			JOY_AXIS_LEFT_X: {
+				"neutral": "xbox_stick_l.svg",
+				"negative": "xbox_stick_l_left.svg",
+				"positive": "xbox_stick_l_right.svg",
+			},
+			JOY_AXIS_LEFT_Y: {
+				"neutral": "xbox_stick_l.svg",
+				"negative": "xbox_stick_l_up.svg",
+				"positive": "xbox_stick_l_down.svg",
+			},
+			JOY_AXIS_RIGHT_X: {
+				"neutral": "xbox_stick_r.svg",
+				"negative": "xbox_stick_r_left.svg",
+				"positive": "xbox_stick_r_right.svg",
+			},
+			JOY_AXIS_RIGHT_Y: {
+				"neutral": "xbox_stick_r.svg",
+				"negative": "xbox_stick_r_up.svg",
+				"positive": "xbox_stick_r_down.svg",
+			},
+			JOY_AXIS_TRIGGER_LEFT: {"neutral": "xbox_lt.svg"},
+			JOY_AXIS_TRIGGER_RIGHT: {"neutral": "xbox_rt.svg"},
+		},
 	},
+
 	FAMILY_PLAYSTATION: {
-		"back": "playstation4_button_share.svg",
-		"start": "playstation4_button_options.svg",
-		"misc": "playstation5_button_mute.svg",
+		"dir": "playstation-series",
+		"device": "controller_playstation5.svg",
+		# No guide/PS-button art ships with the pack; that button falls back to Xbox.
+		"buttons": {
+			JOY_BUTTON_A: "playstation_button_cross.svg",
+			JOY_BUTTON_B: "playstation_button_circle.svg",
+			JOY_BUTTON_X: "playstation_button_square.svg",
+			JOY_BUTTON_Y: "playstation_button_triangle.svg",
+			JOY_BUTTON_DPAD_UP: "playstation_dpad_up.svg",
+			JOY_BUTTON_DPAD_DOWN: "playstation_dpad_down.svg",
+			JOY_BUTTON_DPAD_LEFT: "playstation_dpad_left.svg",
+			JOY_BUTTON_DPAD_RIGHT: "playstation_dpad_right.svg",
+			JOY_BUTTON_LEFT_SHOULDER: "playstation_trigger_l1.svg",
+			JOY_BUTTON_RIGHT_SHOULDER: "playstation_trigger_r1.svg",
+			JOY_BUTTON_LEFT_STICK: "playstation_button_l3.svg",
+			JOY_BUTTON_RIGHT_STICK: "playstation_button_r3.svg",
+			JOY_BUTTON_BACK: "playstation5_button_create.svg",
+			JOY_BUTTON_START: "playstation5_button_options.svg",
+			JOY_BUTTON_MISC1: "playstation5_button_mute.svg",
+			JOY_BUTTON_TOUCHPAD: "playstation5_touchpad_press.svg",
+		},
+		"axes": {
+			JOY_AXIS_LEFT_X: {
+				"neutral": "playstation_stick_l.svg",
+				"negative": "playstation_stick_l_left.svg",
+				"positive": "playstation_stick_l_right.svg",
+			},
+			JOY_AXIS_LEFT_Y: {
+				"neutral": "playstation_stick_l.svg",
+				"negative": "playstation_stick_l_up.svg",
+				"positive": "playstation_stick_l_down.svg",
+			},
+			JOY_AXIS_RIGHT_X: {
+				"neutral": "playstation_stick_r.svg",
+				"negative": "playstation_stick_r_left.svg",
+				"positive": "playstation_stick_r_right.svg",
+			},
+			JOY_AXIS_RIGHT_Y: {
+				"neutral": "playstation_stick_r.svg",
+				"negative": "playstation_stick_r_up.svg",
+				"positive": "playstation_stick_r_down.svg",
+			},
+			JOY_AXIS_TRIGGER_LEFT: {"neutral": "playstation_trigger_l2.svg"},
+			JOY_AXIS_TRIGGER_RIGHT: {"neutral": "playstation_trigger_r2.svg"},
+		},
 	},
+
 	FAMILY_SWITCH: {
-		"back": "switch_button_minus.svg",
-		"start": "switch_button_plus.svg",
-		"guide": "switch_button_home.svg",
+		"dir": "nintendo-switch",
+		"device": "controller_switch_pro.svg",
+		"buttons": {
+			JOY_BUTTON_A: "switch_button_b.svg",
+			JOY_BUTTON_B: "switch_button_a.svg",
+			JOY_BUTTON_X: "switch_button_y.svg",
+			JOY_BUTTON_Y: "switch_button_x.svg",
+			JOY_BUTTON_DPAD_UP: "switch_dpad_up.svg",
+			JOY_BUTTON_DPAD_DOWN: "switch_dpad_down.svg",
+			JOY_BUTTON_DPAD_LEFT: "switch_dpad_left.svg",
+			JOY_BUTTON_DPAD_RIGHT: "switch_dpad_right.svg",
+			JOY_BUTTON_LEFT_SHOULDER: "switch_button_l.svg",
+			JOY_BUTTON_RIGHT_SHOULDER: "switch_button_r.svg",
+			JOY_BUTTON_LEFT_STICK: "switch_stick_l_press.svg",
+			JOY_BUTTON_RIGHT_STICK: "switch_stick_r_press.svg",
+			JOY_BUTTON_BACK: "switch_button_minus.svg",
+			JOY_BUTTON_START: "switch_button_plus.svg",
+			JOY_BUTTON_GUIDE: "switch_button_home.svg",
+			JOY_BUTTON_MISC1: "switch_button_sync.svg",
+			JOY_BUTTON_PADDLE1: "switch_button_sl.svg",
+			JOY_BUTTON_PADDLE2: "switch_button_sr.svg",
+		},
+		"axes": {
+			JOY_AXIS_LEFT_X: {
+				"neutral": "switch_stick_l.svg",
+				"negative": "switch_stick_l_left.svg",
+				"positive": "switch_stick_l_right.svg",
+			},
+			JOY_AXIS_LEFT_Y: {
+				"neutral": "switch_stick_l.svg",
+				"negative": "switch_stick_l_up.svg",
+				"positive": "switch_stick_l_down.svg",
+			},
+			JOY_AXIS_RIGHT_X: {
+				"neutral": "switch_stick_r.svg",
+				"negative": "switch_stick_r_left.svg",
+				"positive": "switch_stick_r_right.svg",
+			},
+			JOY_AXIS_RIGHT_Y: {
+				"neutral": "switch_stick_r.svg",
+				"negative": "switch_stick_r_up.svg",
+				"positive": "switch_stick_r_down.svg",
+			},
+			JOY_AXIS_TRIGGER_LEFT: {"neutral": "switch_button_zl.svg"},
+			JOY_AXIS_TRIGGER_RIGHT: {"neutral": "switch_button_zr.svg"},
+		},
 	},
+
+	FAMILY_SWITCH_2: {
+		"dir": "nintendo-switch-2",
+		"device": "controller_switch_pro.svg",
+		"buttons": {
+			JOY_BUTTON_A: "switch_button_b.svg",
+			JOY_BUTTON_B: "switch_button_a.svg",
+			JOY_BUTTON_X: "switch_button_y.svg",
+			JOY_BUTTON_Y: "switch_button_x.svg",
+			JOY_BUTTON_DPAD_UP: "switch_dpad_up.svg",
+			JOY_BUTTON_DPAD_DOWN: "switch_dpad_down.svg",
+			JOY_BUTTON_DPAD_LEFT: "switch_dpad_left.svg",
+			JOY_BUTTON_DPAD_RIGHT: "switch_dpad_right.svg",
+			JOY_BUTTON_LEFT_SHOULDER: "switch_button_l.svg",
+			JOY_BUTTON_RIGHT_SHOULDER: "switch_button_r.svg",
+			JOY_BUTTON_LEFT_STICK: "switch_stick_l_press.svg",
+			JOY_BUTTON_RIGHT_STICK: "switch_stick_r_press.svg",
+			JOY_BUTTON_BACK: "switch_button_minus.svg",
+			JOY_BUTTON_START: "switch_button_plus.svg",
+			JOY_BUTTON_GUIDE: "switch_button_home.svg",
+			JOY_BUTTON_MISC1: "switch_button_c.svg",
+			JOY_BUTTON_PADDLE1: "switch_button_gl.svg",
+			JOY_BUTTON_PADDLE2: "switch_button_gr.svg",
+			JOY_BUTTON_PADDLE3: "switch_button_sl.svg",
+			JOY_BUTTON_PADDLE4: "switch_button_sr.svg",
+		},
+		"axes": {
+			JOY_AXIS_LEFT_X: {
+				"neutral": "switch_stick_l.svg",
+				"negative": "switch_stick_l_left.svg",
+				"positive": "switch_stick_l_right.svg",
+			},
+			JOY_AXIS_LEFT_Y: {
+				"neutral": "switch_stick_l.svg",
+				"negative": "switch_stick_l_up.svg",
+				"positive": "switch_stick_l_down.svg",
+			},
+			JOY_AXIS_RIGHT_X: {
+				"neutral": "switch_stick_r.svg",
+				"negative": "switch_stick_r_left.svg",
+				"positive": "switch_stick_r_right.svg",
+			},
+			JOY_AXIS_RIGHT_Y: {
+				"neutral": "switch_stick_r.svg",
+				"negative": "switch_stick_r_up.svg",
+				"positive": "switch_stick_r_down.svg",
+			},
+			JOY_AXIS_TRIGGER_LEFT: {"neutral": "switch_button_zl.svg"},
+			JOY_AXIS_TRIGGER_RIGHT: {"neutral": "switch_button_zr.svg"},
+		},
+	},
+
 	FAMILY_STEAM_DECK: {
-		"back": "steamdeck_button_view.svg",
-		"start": "steamdeck_button_options.svg",
-		"guide": "steamdeck_button_guide.svg",
-		"misc": "steamdeck_button_quickaccess.svg",
+		"dir": "steam-deck",
+		"device": "controller_steamdeck.svg",
+		"buttons": {
+			JOY_BUTTON_A: "steamdeck_button_a.svg",
+			JOY_BUTTON_B: "steamdeck_button_b.svg",
+			JOY_BUTTON_X: "steamdeck_button_x.svg",
+			JOY_BUTTON_Y: "steamdeck_button_y.svg",
+			JOY_BUTTON_DPAD_UP: "steamdeck_dpad_up.svg",
+			JOY_BUTTON_DPAD_DOWN: "steamdeck_dpad_down.svg",
+			JOY_BUTTON_DPAD_LEFT: "steamdeck_dpad_left.svg",
+			JOY_BUTTON_DPAD_RIGHT: "steamdeck_dpad_right.svg",
+			JOY_BUTTON_LEFT_SHOULDER: "steamdeck_button_l1.svg",
+			JOY_BUTTON_RIGHT_SHOULDER: "steamdeck_button_r1.svg",
+			JOY_BUTTON_LEFT_STICK: "steamdeck_stick_l_press.svg",
+			JOY_BUTTON_RIGHT_STICK: "steamdeck_stick_r_press.svg",
+			JOY_BUTTON_BACK: "steamdeck_button_view.svg",
+			JOY_BUTTON_START: "steamdeck_button_options.svg",
+			JOY_BUTTON_GUIDE: "steamdeck_button_guide.svg",
+			JOY_BUTTON_MISC1: "steamdeck_button_quickaccess.svg",
+			JOY_BUTTON_PADDLE1: "steamdeck_button_l4.svg",
+			JOY_BUTTON_PADDLE2: "steamdeck_button_r4.svg",
+			JOY_BUTTON_PADDLE3: "steamdeck_button_l5.svg",
+			JOY_BUTTON_PADDLE4: "steamdeck_button_r5.svg",
+		},
+		"axes": {
+			JOY_AXIS_LEFT_X: {
+				"neutral": "steamdeck_stick_l.svg",
+				"negative": "steamdeck_stick_l_left.svg",
+				"positive": "steamdeck_stick_l_right.svg",
+			},
+			JOY_AXIS_LEFT_Y: {
+				"neutral": "steamdeck_stick_l.svg",
+				"negative": "steamdeck_stick_l_up.svg",
+				"positive": "steamdeck_stick_l_down.svg",
+			},
+			JOY_AXIS_RIGHT_X: {
+				"neutral": "steamdeck_stick_r.svg",
+				"negative": "steamdeck_stick_r_left.svg",
+				"positive": "steamdeck_stick_r_right.svg",
+			},
+			JOY_AXIS_RIGHT_Y: {
+				"neutral": "steamdeck_stick_r.svg",
+				"negative": "steamdeck_stick_r_up.svg",
+				"positive": "steamdeck_stick_r_down.svg",
+			},
+			JOY_AXIS_TRIGGER_LEFT: {"neutral": "steamdeck_button_l2.svg"},
+			JOY_AXIS_TRIGGER_RIGHT: {"neutral": "steamdeck_button_r2.svg"},
+		},
+	},
+
+	FAMILY_STEAM_CONTROLLER: {
+		"dir": "steam-controller",
+		"device": "controller_steam.svg",
+		"buttons": {
+			JOY_BUTTON_A: "steam_button_a.svg",
+			JOY_BUTTON_B: "steam_button_b.svg",
+			JOY_BUTTON_X: "steam_button_x.svg",
+			JOY_BUTTON_Y: "steam_button_y.svg",
+			JOY_BUTTON_DPAD_UP: "steam_dpad_up.svg",
+			JOY_BUTTON_DPAD_DOWN: "steam_dpad_down.svg",
+			JOY_BUTTON_DPAD_LEFT: "steam_dpad_left.svg",
+			JOY_BUTTON_DPAD_RIGHT: "steam_dpad_right.svg",
+			JOY_BUTTON_LEFT_SHOULDER: "steam_lb.svg",
+			JOY_BUTTON_RIGHT_SHOULDER: "steam_rb.svg",
+			JOY_BUTTON_LEFT_STICK: "steam_stick_l_press.svg",
+			JOY_BUTTON_RIGHT_STICK: "steam_button_rp.svg",
+			JOY_BUTTON_BACK: "steam_button_back_icon.svg",
+			JOY_BUTTON_START: "steam_button_start_icon.svg",
+			JOY_BUTTON_GUIDE: "controller_steam.svg",
+			JOY_BUTTON_TOUCHPAD: "steam_button_lp.svg",
+			JOY_BUTTON_PADDLE1: "steam_lg.svg",
+			JOY_BUTTON_PADDLE2: "steam_rg.svg",
+		},
+		"axes": {
+			JOY_AXIS_LEFT_X: {
+				"neutral": "steam_stick.svg",
+				"negative": "steam_stick_left.svg",
+				"positive": "steam_stick_right.svg",
+			},
+			JOY_AXIS_LEFT_Y: {
+				"neutral": "steam_stick.svg",
+				"negative": "steam_stick_up.svg",
+				"positive": "steam_stick_down.svg",
+			},
+			JOY_AXIS_RIGHT_X: {
+				"neutral": "steam_pad.svg",
+				"negative": "steam_pad_left.svg",
+				"positive": "steam_pad_right.svg",
+			},
+			JOY_AXIS_RIGHT_Y: {
+				"neutral": "steam_pad.svg",
+				"negative": "steam_pad_up.svg",
+				"positive": "steam_pad_down.svg",
+			},
+			JOY_AXIS_TRIGGER_LEFT: {"neutral": "steam_lt.svg"},
+			JOY_AXIS_TRIGGER_RIGHT: {"neutral": "steam_rt.svg"},
+		},
+	},
+
+	FAMILY_STEAM_CONTROLLER_2: {
+		"dir": "steam-controller",
+		"device": "controller_steam_new.svg",
+		"buttons": {
+			JOY_BUTTON_A: "steam_button_a.svg",
+			JOY_BUTTON_B: "steam_button_b.svg",
+			JOY_BUTTON_X: "steam_button_x.svg",
+			JOY_BUTTON_Y: "steam_button_y.svg",
+			JOY_BUTTON_DPAD_UP: "steam_dpad_up.svg",
+			JOY_BUTTON_DPAD_DOWN: "steam_dpad_down.svg",
+			JOY_BUTTON_DPAD_LEFT: "steam_dpad_left.svg",
+			JOY_BUTTON_DPAD_RIGHT: "steam_dpad_right.svg",
+			JOY_BUTTON_LEFT_SHOULDER: "controller_button_l1.svg",
+			JOY_BUTTON_RIGHT_SHOULDER: "controller_button_r1.svg",
+			JOY_BUTTON_LEFT_STICK: "steam_stick_l_press.svg",
+			JOY_BUTTON_RIGHT_STICK: "steam_button_rp.svg",
+			JOY_BUTTON_BACK: "controller_button_view.svg",
+			JOY_BUTTON_START: "controller_button_options.svg",
+			JOY_BUTTON_GUIDE: "controller_icon.svg",
+			JOY_BUTTON_MISC1: "controller_button_quickaccess.svg",
+			JOY_BUTTON_TOUCHPAD: "steam_button_lp.svg",
+			JOY_BUTTON_PADDLE1: "controller_button_l4.svg",
+			JOY_BUTTON_PADDLE2: "controller_button_r4.svg",
+			JOY_BUTTON_PADDLE3: "controller_button_l5.svg",
+			JOY_BUTTON_PADDLE4: "controller_button_r5.svg",
+		},
+		"axes": {
+			JOY_AXIS_LEFT_X: {
+				"neutral": "steam_stick.svg",
+				"negative": "steam_stick_left.svg",
+				"positive": "steam_stick_right.svg",
+			},
+			JOY_AXIS_LEFT_Y: {
+				"neutral": "steam_stick.svg",
+				"negative": "steam_stick_up.svg",
+				"positive": "steam_stick_down.svg",
+			},
+			JOY_AXIS_RIGHT_X: {
+				"neutral": "steam_stick.svg",
+				"negative": "steam_stick_left.svg",
+				"positive": "steam_stick_right.svg",
+			},
+			JOY_AXIS_RIGHT_Y: {
+				"neutral": "steam_stick.svg",
+				"negative": "steam_stick_up.svg",
+				"positive": "steam_stick_down.svg",
+			},
+			JOY_AXIS_TRIGGER_LEFT: {"neutral": "controller_button_l2.svg"},
+			JOY_AXIS_TRIGGER_RIGHT: {"neutral": "controller_button_r2.svg"},
+		},
 	},
 }
-
-const _PADDLES = {
-	JOY_BUTTON_PADDLE1: "xbox_elite_paddle_top_left.svg",
-	JOY_BUTTON_PADDLE2: "xbox_elite_paddle_top_right.svg",
-	JOY_BUTTON_PADDLE3: "xbox_elite_paddle_bottom_left.svg",
-	JOY_BUTTON_PADDLE4: "xbox_elite_paddle_bottom_right.svg",
-}
-
-const _DPAD = {
-	JOY_BUTTON_DPAD_UP: "up",
-	JOY_BUTTON_DPAD_DOWN: "down",
-	JOY_BUTTON_DPAD_LEFT: "left",
-	JOY_BUTTON_DPAD_RIGHT: "right",
-}
+#================================================================================#
 
 # LOOKUP
 #================================================================================#
+# Narrows a detected family to one that has art. Unknown families render as Xbox.
+static func resolve_family(family: String) -> String:
+	if family.is_empty():
+		family = InputDeviceTracker.current_family()
+	return family if _PROFILES.has(family) else FAMILY_XBOX
+
 static func path_for_button(button: JoyButton, family: String = "") -> String:
-	family = _resolved_family(family)
-	var file = _button_file(button, family)
+	family = resolve_family(family)
+	var file := str(_buttons(family).get(button, ""))
 	if file.is_empty() and family != FAMILY_XBOX:
-		file = _button_file(button, FAMILY_XBOX)
-		family = FAMILY_XBOX
-	return Icons.join(family, file) if not file.is_empty() else ""
+		return path_for_button(button, FAMILY_XBOX)
+	return _join(family, file)
 
 static func path_for_axis(axis: JoyAxis, axis_value: float = 1.0, family: String = "") -> String:
-	family = _resolved_family(family)
-	var file = _axis_file(axis, axis_value, family)
+	family = resolve_family(family)
+	var file := _axis_file(axis, axis_value, family)
 	if file.is_empty() and family != FAMILY_XBOX:
-		file = _axis_file(axis, axis_value, FAMILY_XBOX)
-		family = FAMILY_XBOX
-	return Icons.join(family, file) if not file.is_empty() else ""
+		return path_for_axis(axis, axis_value, FAMILY_XBOX)
+	return _join(family, file)
+
+static func path_for_device(family: String = "") -> String:
+	family = resolve_family(family)
+	return _join(family, str(_PROFILES[family].get("device", "")))
 
 static func texture_for_button(button: JoyButton, family: String = "") -> Texture2D:
 	return Icons.load_texture(path_for_button(button, family))
@@ -90,98 +409,30 @@ static func texture_for_axis(
 	family: String = "",
 ) -> Texture2D:
 	return Icons.load_texture(path_for_axis(axis, axis_value, family))
+
+static func texture_for_device(family: String = "") -> Texture2D:
+	return Icons.load_texture(path_for_device(family))
 #================================================================================#
 
 # INTERNAL
 #================================================================================#
-static func _resolved_family(family: String) -> String:
-	if family.is_empty():
-		return InputDeviceTracker.current_family()
-	return InputDeviceTracker.resolve_family(family)
-
-static func _prefix(family: String) -> String:
-	return str(_PREFIX.get(family, "xbox"))
-
-static func _button_file(button: JoyButton, family: String) -> String:
-	var p = _prefix(family)
-	match button:
-		JOY_BUTTON_A, JOY_BUTTON_B, JOY_BUTTON_X, JOY_BUTTON_Y:
-			var faces = _FACE.get(family, _FACE[FAMILY_XBOX])
-			return "%s_button_%s.svg" % [p, faces[int(button)]]
-		JOY_BUTTON_DPAD_UP, JOY_BUTTON_DPAD_DOWN, JOY_BUTTON_DPAD_LEFT, JOY_BUTTON_DPAD_RIGHT:
-			return "%s_dpad_%s.svg" % [p, _DPAD[button]]
-		JOY_BUTTON_LEFT_STICK:
-			return _stick_click(family, "l")
-		JOY_BUTTON_RIGHT_STICK:
-			return _stick_click(family, "r")
-		JOY_BUTTON_LEFT_SHOULDER:
-			return _shoulder(family, "l")
-		JOY_BUTTON_RIGHT_SHOULDER:
-			return _shoulder(family, "r")
-		JOY_BUTTON_BACK:
-			return str(_SYSTEM.get(family, {}).get("back", ""))
-		JOY_BUTTON_START:
-			return str(_SYSTEM.get(family, {}).get("start", ""))
-		JOY_BUTTON_GUIDE:
-			return str(_SYSTEM.get(family, {}).get("guide", ""))
-		JOY_BUTTON_MISC1:
-			return str(_SYSTEM.get(family, {}).get("misc", ""))
-		JOY_BUTTON_TOUCHPAD:
-			return "playstation4_touchpad_press.svg" if family == FAMILY_PLAYSTATION else ""
-		JOY_BUTTON_PADDLE1, JOY_BUTTON_PADDLE2, JOY_BUTTON_PADDLE3, JOY_BUTTON_PADDLE4:
-			return str(_PADDLES.get(button, "")) if family == FAMILY_XBOX else ""
-		_:
-			return ""
+static func _buttons(family: String) -> Dictionary:
+	return _PROFILES[family].get("buttons", {})
 
 static func _axis_file(axis: JoyAxis, axis_value: float, family: String) -> String:
-	var p = _prefix(family)
-	match axis:
-		JOY_AXIS_TRIGGER_LEFT:
-			return _trigger(family, "l")
-		JOY_AXIS_TRIGGER_RIGHT:
-			return _trigger(family, "r")
-		JOY_AXIS_LEFT_X, JOY_AXIS_LEFT_Y, JOY_AXIS_RIGHT_X, JOY_AXIS_RIGHT_Y:
-			var stick = "l" if axis <= JOY_AXIS_LEFT_Y else "r"
-			var horizontal = axis == JOY_AXIS_LEFT_X or axis == JOY_AXIS_RIGHT_X
-			if absf(axis_value) < _AXIS_DEADZONE:
-				return "%s_stick_%s.svg" % [p, stick]
-			var dir = ""
-			if horizontal:
-				dir = "left" if axis_value < 0.0 else "right"
-			else:
-				dir = "up" if axis_value < 0.0 else "down"
-			return "%s_stick_%s_%s.svg" % [p, stick, dir]
-		_:
-			return ""
+	var entry: Variant = _PROFILES[family].get("axes", {}).get(axis)
+	if not entry is Dictionary:
+		return ""
 
-static func _stick_click(family: String, side: String) -> String:
-	if family == FAMILY_PLAYSTATION:
-		return "playstation_button_%s3.svg" % side
-	return "%s_stick_%s_press.svg" % [_prefix(family), side]
+	if absf(axis_value) < _AXIS_DEADZONE:
+		return str((entry as Dictionary).get("neutral", ""))
 
-static func _shoulder(family: String, side: String) -> String:
-	match family:
-		FAMILY_XBOX:
-			return "xbox_%sb.svg" % side
-		FAMILY_PLAYSTATION:
-			return "playstation_trigger_%s1.svg" % side
-		FAMILY_SWITCH:
-			return "switch_button_%s.svg" % side
-		FAMILY_STEAM_DECK:
-			return "steamdeck_button_%s1.svg" % side
-		_:
-			return ""
+	var slot := "negative" if axis_value < 0.0 else "positive"
+	var file := str((entry as Dictionary).get(slot, ""))
+	return file if not file.is_empty() else str((entry as Dictionary).get("neutral", ""))
 
-static func _trigger(family: String, side: String) -> String:
-	match family:
-		FAMILY_XBOX:
-			return "xbox_%st.svg" % side
-		FAMILY_PLAYSTATION:
-			return "playstation_trigger_%s2.svg" % side
-		FAMILY_SWITCH:
-			return "switch_button_z%s.svg" % side
-		FAMILY_STEAM_DECK:
-			return "steamdeck_button_%s2.svg" % side
-		_:
-			return ""
+static func _join(family: String, file: String) -> String:
+	if file.is_empty():
+		return ""
+	return Icons.join(str(_PROFILES[family].get("dir", "")), file)
 #================================================================================#

@@ -149,7 +149,7 @@ Add actions in **Project → Project Settings → Input Map**. The controls sect
 
 Use `exclude_prefixes` on that section if you want to hide engine/internal actions.
 
-Rebinding steals: if the key or button you assign is already used by another action, that other action is unbound for that input first. Shared keys in project defaults are left alone until the player rebinds.
+Actions can have multiple keyboard and controller bindings. The keybind editor shows them as aligned pair-rows; use **+** to add another pair. If the same input is assigned to two different actions, both slots show a yellow conflict badge — bindings are not auto-cleared.
 
 ## Styling & customization
 

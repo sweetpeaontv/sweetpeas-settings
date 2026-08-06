@@ -19,12 +19,16 @@ layout_mode = 2
 [node name="NameContainer" type="HBoxContainer" parent="SettingRowContainer" unique_id=1472880364]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 1
 
 [node name="Label" type="Label" parent="SettingRowContainer/NameContainer" unique_id=1838741489]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 4
 clip_text = true
 text_overrun_behavior = 3
+vertical_alignment = 1
 
 [node name="SpreadContainer" type="HBoxContainer" parent="SettingRowContainer" unique_id=152524002]
 layout_mode = 2
@@ -32,6 +36,6 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.0
 
 [node name="ValueEditorContainer" type="HBoxContainer" parent="SettingRowContainer" unique_id=204625210]
-custom_minimum_size = Vector2(152, 0)
+custom_minimum_size = Vector2(198, 0)
 layout_mode = 2
 size_flags_horizontal = 3
