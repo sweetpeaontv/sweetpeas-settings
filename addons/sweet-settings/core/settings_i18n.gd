@@ -1,6 +1,6 @@
 # settings_i18n.gd
 # Loads the addon's imported .translation resources at runtime so host projects
-# pick up Sweetpea's Settings strings without a separate locale setup step.
+# pick up Sweet Settings strings without a separate locale setup step.
 extends RefCounted
 
 const AddonPaths = preload("uid://jls0ogr3p8a3")
@@ -8,7 +8,7 @@ const AddonPaths = preload("uid://jls0ogr3p8a3")
 static func load_translations() -> void:
 	var dir := DirAccess.open(AddonPaths.I18N_DIR)
 	if dir == null:
-		push_warning("Sweetpea's Settings: translation folder missing at '%s'." % AddonPaths.I18N_DIR)
+		push_warning("Sweet Settings: translation folder missing at '%s'." % AddonPaths.I18N_DIR)
 		return
 
 	var loaded_any := false
@@ -19,11 +19,11 @@ static func load_translations() -> void:
 		var path := AddonPaths.I18N_DIR.path_join(file_name)
 		var translation := load(path) as Translation
 		if translation == null:
-			push_warning("Sweetpea's Settings: failed to load translation '%s'." % path)
+			push_warning("Sweet Settings: failed to load translation '%s'." % path)
 			continue
 
 		TranslationServer.add_translation(translation)
 		loaded_any = true
 
 	if not loaded_any:
-		push_warning("Sweetpea's Settings: no .translation files found in '%s'." % AddonPaths.I18N_DIR)
+		push_warning("Sweet Settings: no .translation files found in '%s'." % AddonPaths.I18N_DIR)

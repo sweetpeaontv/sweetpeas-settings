@@ -20,12 +20,12 @@ func parse() -> void:
 	source_path = resolve_path()
 
 	if not FileAccess.file_exists(source_path):
-		push_error("Sweetpea's Settings: no schema found at '%s'." % source_path)
+		push_error("Sweet Settings: no schema found at '%s'." % source_path)
 		return
 
 	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(source_path))
 	if not parsed is Dictionary:
-		push_error("Sweetpea's Settings: invalid schema at '%s'." % source_path)
+		push_error("Sweet Settings: invalid schema at '%s'." % source_path)
 		return
 
 	_build(parsed)
@@ -47,7 +47,7 @@ static func resolve_path() -> String:
 	custom_paths.sort()
 	if custom_paths.size() > 1:
 		push_warning(
-			"Sweetpea's Settings: found %d custom schemas in '%s'; using '%s'."
+			"Sweet Settings: found %d custom schemas in '%s'; using '%s'."
 			% [custom_paths.size(), AddonPaths.CONFIG_DIR, custom_paths[0]]
 		)
 
@@ -176,7 +176,7 @@ func _build(raw_schema: Dictionary) -> void:
 func _normalize_section(raw_section: Dictionary) -> Dictionary:
 	var id := str(raw_section.get("id", "")).strip_edges()
 	if id.is_empty():
-		push_error("Sweetpea's Settings: a section is missing its 'id'; skipping it.")
+		push_error("Sweet Settings: a section is missing its 'id'; skipping it.")
 		return {}
 
 	var settings: Array[Dictionary] = []
@@ -232,14 +232,14 @@ func _normalize_section_component(
 		component["type"] = str(component.get("type", "")).strip_edges()
 	else:
 		push_error(
-			"Sweetpea's Settings: section '%s' %s entry must be a string or object."
+			"Sweet Settings: section '%s' %s entry must be a string or object."
 			% [section_id, slot]
 		)
 		return {}
 
 	if component["type"].is_empty():
 		push_error(
-			"Sweetpea's Settings: section '%s' %s entry is missing 'type'."
+			"Sweet Settings: section '%s' %s entry is missing 'type'."
 			% [section_id, slot]
 		)
 		return {}
@@ -282,7 +282,7 @@ func _normalize_entry(raw_entry: Dictionary, section_id: String) -> Array[Dictio
 			)
 			if raw_setting.is_empty():
 				push_error(
-					"Sweetpea's Settings: a '%s' item in section '%s' must be a string or object."
+					"Sweet Settings: a '%s' item in section '%s' must be a string or object."
 					% [KEYS_FIELD, section_id]
 				)
 				continue
@@ -303,7 +303,7 @@ func _register_setting(
 
 	if _by_key.has(setting["key"]):
 		push_error(
-			"Sweetpea's Settings: duplicate setting key '%s'; keeping the first one."
+			"Sweet Settings: duplicate setting key '%s'; keeping the first one."
 			% setting["key"]
 		)
 		return []
@@ -317,7 +317,7 @@ func _normalize_setting(raw_setting: Dictionary, shared: Dictionary, section_id:
 
 	var key := str(setting.get("key", "")).strip_edges()
 	if key.is_empty():
-		push_error("Sweetpea's Settings: a setting in section '%s' has no 'key'." % section_id)
+		push_error("Sweet Settings: a setting in section '%s' has no 'key'." % section_id)
 		return {}
 
 	setting["key"] = key
@@ -332,7 +332,7 @@ func _normalize_setting(raw_setting: Dictionary, shared: Dictionary, section_id:
 
 	setting["type"] = str(setting.get("type", "")).strip_edges()
 	if setting["type"].is_empty():
-		push_error("Sweetpea's Settings: setting '%s' has no 'type'; skipping it." % key)
+		push_error("Sweet Settings: setting '%s' has no 'type'; skipping it." % key)
 		return {}
 
 	if not setting.has("default"):
@@ -342,7 +342,7 @@ func _normalize_setting(raw_setting: Dictionary, shared: Dictionary, section_id:
 		else:
 			var options: Array = setting.get("options", [])
 			if options.is_empty():
-				push_error("Sweetpea's Settings: setting '%s' has no 'default'; skipping it." % key)
+				push_error("Sweet Settings: setting '%s' has no 'default'; skipping it." % key)
 				return {}
 			setting["default"] = options[0]["value"]
 

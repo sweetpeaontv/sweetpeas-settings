@@ -34,7 +34,7 @@ func _mount_editor(initial_value: Variant) -> void:
 
 	var control := _editor.get_control()
 	if control == null:
-		push_error("Sweetpea's Settings: editor '%s' returned no control" % _setting.get("type", ""))
+		push_error("Sweet Settings: editor '%s' returned no control" % _setting.get("type", ""))
 		return
 
 	control.size_flags_horizontal = Control.SIZE_EXPAND_FILL

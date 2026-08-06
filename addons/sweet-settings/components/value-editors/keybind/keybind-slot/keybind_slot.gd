@@ -10,7 +10,7 @@ const IconPaths = preload("uid://cxwurn6qv7ral")
 signal pressed
 signal clear_pressed
 
-# Theme type for the addon's own properties. Users style Sweetpea's Settings by
+# Theme type for the addon's own properties. Users style Sweet Settings by
 # adding entries under this type in their Theme.
 const THEME_TYPE := &"SweetSettings"
 

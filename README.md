@@ -1,4 +1,6 @@
-<img src="images/sweet-settings.png" alt="" width="1280"> 
+# Sweet Settings
+
+<img src="images/sweet-settings.png" alt="The Sweet Settings menu, showing the Controls tab with rebindable keyboard and controller inputs" width="1280">
 
 A drop-in settings menu for Godot 4.7+ games.
 
@@ -16,16 +18,16 @@ Ships with basic settings most games need and is built to be extended. Drop it s
 ### From GitHub
 
 1. Download or clone this repo
-2. Copy `addons/sweetpeas-settings` into your project's `addons/` folder
-3. In **Project → Project Settings → Plugins**, enable **Sweetpea's Settings**
+2. Copy `addons/sweet-settings` into your project's `addons/` folder
+3. In **Project → Project Settings → Plugins**, enable **Sweet Settings**
 
 ### From the Asset Store
 
 1. Open **AssetStore** in the Godot editor
-2. Search for **Sweetpea's Settings**
+2. Search for **Sweet Settings**
 3. Download and install, then enable the plugin under **Project → Project Settings → Plugins**
 
-Once enabled, the plugin adds the `SweetSettings` autoload. Instance `res://addons/sweetpeas-settings/ui/settings.tscn` wherever you want the menu (pause screen, options button, etc.).
+Once enabled, the plugin adds the `SweetSettings` autoload. Instance `res://addons/sweet-settings/ui/settings.tscn` wherever you want the menu (pause screen, options button, etc.).
 
 ### Project setup notes
 
@@ -35,7 +37,7 @@ Once enabled, the plugin adds the `SweetSettings` autoload. Instance `res://addo
 
 ## Schema shape
 
-Settings are defined in JSON under `addons/sweetpeas-settings/config/`. The shipped defaults live in `default_schema.json` — peek there for a full working example. The shape itself looks like this:
+Settings are defined in JSON under `addons/sweet-settings/config/`. The shipped defaults live in `default_schema.json` — peek there for a full working example. The shape itself looks like this:
 
 ```json
 {
@@ -133,7 +135,7 @@ Use `key` for one-offs. Use `keys` when several settings share the same shape.
 The built-in list lives at:
 
 ```
-addons/sweetpeas-settings/config/default_schema.json
+addons/sweet-settings/config/default_schema.json
 ```
 
 Add new settings or tweak the current ones to match your game.
@@ -156,7 +158,7 @@ Actions can have multiple keyboard and controller bindings. The keybind editor s
 
 The UI is intentionally simple: tabs, rows, and value editors. It is meant to get you running, not lock you into one look.
 
-A small theme ships at `addons/sweetpeas-settings/theme/sweetpeas_settings.tres` with a few custom colors. Extend it, fold those entries into your project's theme, or apply a different theme to the settings scene (or a parent) to restyle controls.
+A small theme ships at `addons/sweet-settings/theme/sweet_settings.tres` with a few custom colors. Extend it, fold those entries into your project's theme, or apply a different theme to the settings scene (or a parent) to restyle controls.
 
 Properties specific to this addon live under the `SweetSettings` theme type, so a matching entry in your own theme overrides them:
 
@@ -186,4 +188,4 @@ I intend to maintain and update this repo when necessary. Don't expect regular o
 
 MIT — see [LICENSE](LICENSE).
 
-Keybind prompt icons are from [Kenney's Input Prompts](https://kenney.nl/assets/input-prompts) (CC0). See `addons/sweetpeas-settings/licenses/third-party/kenney-input-prompts.txt`.
+Keybind prompt icons are from [Kenney's Input Prompts](https://kenney.nl/assets/input-prompts) (CC0). See `addons/sweet-settings/licenses/third-party/kenney-input-prompts.txt`.

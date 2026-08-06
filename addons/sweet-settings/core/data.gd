@@ -110,7 +110,7 @@ func save() -> void:
 	var task_id := WorkerThreadPool.add_task(
 		_write_snapshot.bind(snapshot, generation),
 		false,
-		"Sweetpea's Settings: save"
+		"Sweet Settings: save"
 	)
 	_pending_task_ids.append(task_id)
 
@@ -139,7 +139,7 @@ func _write_snapshot(snapshot: Dictionary, generation: int) -> void:
 	# rewrites entire file
 	var file := FileAccess.open(AddonPaths.SAVE_PATH, FileAccess.WRITE)
 	if file == null:
-		push_error("Sweetpea's Settings: failed to open '%s' for writing." % AddonPaths.SAVE_PATH)
+		push_error("Sweet Settings: failed to open '%s' for writing." % AddonPaths.SAVE_PATH)
 		_write_mutex.unlock()
 		return
 
@@ -150,7 +150,7 @@ func _write_snapshot(snapshot: Dictionary, generation: int) -> void:
 func _read() -> void:
 	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(AddonPaths.SAVE_PATH))
 	if not parsed is Dictionary:
-		push_error("Sweetpea's Settings: '%s' is unreadable; using defaults." % AddonPaths.SAVE_PATH)
+		push_error("Sweet Settings: '%s' is unreadable; using defaults." % AddonPaths.SAVE_PATH)
 		return
 
 	for key in parsed:

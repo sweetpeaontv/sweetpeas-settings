@@ -27,7 +27,7 @@ static func snapshot_action(action: StringName) -> Dictionary:
 static func apply_to_action(action: String, binding: Variant) -> void:
 	if not InputMap.has_action(action):
 		push_warning(
-			"Sweetpea's Settings: InputMap has no action '%s'; skipped keybind apply." % action
+			"Sweet Settings: InputMap has no action '%s'; skipped keybind apply." % action
 		)
 		return
 

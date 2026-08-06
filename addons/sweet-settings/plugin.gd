@@ -15,7 +15,7 @@ func _enable_plugin() -> void:
 		return
 
 	push_error(
-		"Sweetpea's Settings: an autoload named '%s' already exists and points at '%s'. Rename or remove it, then re-enable the plugin."
+		"Sweet Settings: an autoload named '%s' already exists and points at '%s'. Rename or remove it, then re-enable the plugin."
 		% [AUTOLOAD_NAME, entry]
 	)
 

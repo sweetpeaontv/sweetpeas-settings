@@ -11,7 +11,7 @@ static func create(type: String) -> Control:
 
 	var scene: Variant = _components.get(type)
 	if scene == null:
-		push_error("Sweetpea's Settings: unknown section component '%s'" % type)
+		push_error("Sweet Settings: unknown section component '%s'" % type)
 		return null
 
 	return scene.instantiate() as Control

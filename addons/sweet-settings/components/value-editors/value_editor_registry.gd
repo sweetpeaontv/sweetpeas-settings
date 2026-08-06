@@ -11,7 +11,7 @@ static func create(type: String) -> SweetValueEditor:
 
 	var editor_class: Variant = _editors.get(type)
 	if editor_class == null:
-		push_error("Sweetpea's Settings: unknown value editor type '%s'" % type)
+		push_error("Sweet Settings: unknown value editor type '%s'" % type)
 		return null
 
 	return editor_class.new()

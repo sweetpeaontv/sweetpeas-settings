@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://ch5ft5bmdng6q"
+
+[deps]
+
+files=["res://addons/sweet-settings/i18n/sweet_settings.en.translation", "res://addons/sweet-settings/i18n/sweet_settings.es.translation"]
+
+source_file="res://addons/sweet-settings/i18n/sweet_settings.csv"
+dest_files=["res://addons/sweet-settings/i18n/sweet_settings.en.translation", "res://addons/sweet-settings/i18n/sweet_settings.es.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

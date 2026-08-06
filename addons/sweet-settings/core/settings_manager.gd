@@ -157,10 +157,10 @@ func _queue_save() -> void:
 func _unknown_key_message(key: String) -> String:
 	var suggestion := schema.suggest_key(key)
 	if suggestion.is_empty():
-		return "Sweetpea's Settings: no setting named '%s' in '%s'." % [key, schema.source_path]
+		return "Sweet Settings: no setting named '%s' in '%s'." % [key, schema.source_path]
 
 	return (
-		"Sweetpea's Settings: no setting named '%s' in '%s'. Did you mean '%s'?"
+		"Sweet Settings: no setting named '%s' in '%s'. Did you mean '%s'?"
 		% [key, schema.source_path, suggestion]
 	)
 #================================================================================#

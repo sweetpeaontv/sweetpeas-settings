@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://c0uhrmy4gxqqv"]
 
 [ext_resource type="Script" uid="uid://cc02g4lqbsgs3" path="res://addons/sweet-settings/components/value-editors/keybind/keybind-slot/keybind_slot.gd" id="1_slot"]
-[ext_resource type="PackedScene" uid="uid://cdlcg5uhf1qjq" path="res://addons/sweet-settings/components/icon-button/icon-button.tscn" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://cdlcg5uhf1qjq" path="res://addons/sweet-settings/components/icon-button/icon_button.tscn" id="2_icon"]
 
 [node name="KeybindSlot" type="Control" unique_id=1868531827]
 custom_minimum_size = Vector2(72, 40)
