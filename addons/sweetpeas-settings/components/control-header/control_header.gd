@@ -14,7 +14,7 @@ func _ready() -> void:
 
 func _input(event: InputEvent) -> void:
 	SweetIcons.note_input_event(event)
-	var family := InputDeviceTracker.current_family()
+	var family := SweetInputDeviceTracker.current_family()
 	if family != _last_family:
 		_refresh_icons()
 
@@ -27,10 +27,10 @@ func _ensure_nodes() -> void:
 
 func _refresh_icons() -> void:
 	_ensure_nodes()
-	_last_family = InputDeviceTracker.current_family()
+	_last_family = SweetInputDeviceTracker.current_family()
 	_keyboard_icon.texture = SweetIcons.texture_for_keyboard_device()
 	_controller_icon.texture = SweetIcons.texture_for_controller_device(_last_family)
 
 func _on_joy_connection_changed(_device: int, _connected: bool) -> void:
-	InputDeviceTracker.refresh_connections()
+	SweetInputDeviceTracker.refresh_connections()
 	_refresh_icons()

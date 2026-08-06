@@ -1,7 +1,7 @@
 # settings_i18n.gd
 # Loads the addon's imported .translation resources at runtime so host projects
 # pick up Sweetpea's Settings strings without a separate locale setup step.
-class_name SettingsI18n
+class_name SweetSettingsI18n
 extends RefCounted
 
 const I18N_DIR := "res://addons/sweetpeas-settings/i18n/"

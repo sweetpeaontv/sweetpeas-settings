@@ -7,10 +7,10 @@ signal setting_changed(key: String, value: Variant)
 
 const SAVE_DELAY_SECONDS := 0.5
 
-var schema: SettingsSchema
-var data: SettingsData
+var schema: SweetSettingsSchema
+var data: SweetSettingsData
 
-var _applier: SettingApplier
+var _applier: SweetSettingApplier
 # pending appliers are used to register appliers that are not ready yet, such as keybinds
 var _pending_appliers: Dictionary = {} # String key -> Callable
 var _save_timer: Timer
@@ -25,15 +25,15 @@ func _ready() -> void:
 	_save_timer.timeout.connect(flush)
 	add_child(_save_timer)
 
-	SettingsI18n.load_translations()
+	SweetSettingsI18n.load_translations()
 
-	schema = SettingsSchema.load_schema()
-	data = SettingsData.load_or_create(schema)
+	schema = SweetSettingsSchema.load_schema()
+	data = SweetSettingsData.load_or_create(schema)
 
 	if data.sanitize_resolution():
 		_queue_save()
 
-	_applier = SettingApplier.new()
+	_applier = SweetSettingApplier.new()
 	_applier.setup(data, schema)
 	_flush_pending_appliers()
 	_applier.apply_all()
@@ -73,10 +73,10 @@ func get_keybind_conflicts() -> Dictionary:
 	for key in schema.keys():
 		if str(schema.get_setting(key).get("type", "")) != "keybind":
 			continue
-		var binding := InputBinding.coerce(data.get_value(key))
-		for column in [InputBinding.KEYBOARD, InputBinding.CONTROLLER]:
+		var binding := SweetInputBinding.coerce(data.get_value(key))
+		for column in [SweetInputBinding.KEYBOARD, SweetInputBinding.CONTROLLER]:
 			for encoded in binding[column]:
-				var fingerprint := InputBinding.event_fingerprint(encoded)
+				var fingerprint := SweetInputBinding.event_fingerprint(encoded)
 				if fingerprint.is_empty():
 					continue
 				if not owners.has(fingerprint):

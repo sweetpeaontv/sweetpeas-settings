@@ -21,7 +21,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-SettingsManager="*uid://cbnx6yl6yesvy"
+SweetSettings="*uid://cbnx6yl6yesvy"
 
 [editor_plugins]
 

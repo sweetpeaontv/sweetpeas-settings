@@ -1,4 +1,4 @@
-<img src="images/sweetpeas-settings.png" alt="" width="1280"> 
+<img src="images/sweet-settings.png" alt="" width="1280"> 
 
 A drop-in settings menu for Godot 4.7+ games.
 
@@ -6,10 +6,10 @@ Ships with basic settings most games need and is built to be extended. Drop it s
 
 ## Features
 
-- **Ready-made defaults** 	- for gameplay, graphics, audio, and controls
-- **Schema-driven UI** 		- settings are defined in JSON, not hardcoded. Add additional settings with a few lines.
-- **Automatic keybinds** 	- Input Map actions are automatically parsed into editable bindings.
-- **Simple, themeable UI** 	- style it with Godot themes, or swap/edit the components yourself
+- **Ready-made defaults** - for gameplay, graphics, audio, and controls
+- **Schema-driven UI** - settings are defined in JSON, not hardcoded. Add additional settings with a few lines.
+- **Automatic keybinds** - Input Map actions are automatically parsed into editable bindings.
+- **Simple, themeable UI** - style it with Godot themes, or swap/edit the components yourself
 
 ## Installation
 
@@ -25,20 +25,13 @@ Ships with basic settings most games need and is built to be extended. Drop it s
 2. Search for **Sweetpea's Settings**
 3. Download and install, then enable the plugin under **Project → Project Settings → Plugins**
 
-Once enabled, the plugin adds the `SettingsManager` autoload. Instance `res://addons/sweetpeas-settings/ui/settings.tscn` wherever you want the menu (pause screen, options button, etc.).
+Once enabled, the plugin adds the `SweetSettings` autoload. Instance `res://addons/sweetpeas-settings/ui/settings.tscn` wherever you want the menu (pause screen, options button, etc.).
 
 ### Project setup notes
 
-**Custom appliers.** Call `SettingsManager.register_applier` from any autoload `_ready` (or later). Registrations before boot finishes are queued; registrations after boot apply the current stored value immediately.
+**Custom appliers.** Call `SweetSettings.register_applier` from any autoload `_ready` (or later). Registrations before boot finishes are queued; registrations after boot apply the current stored value immediately.
 
-**Audio buses.** The default volume settings push into Godot's `AudioServer` by bus name:
-
-| Setting key | Bus name |
-|-------------|----------|
-| `master_volume` | `Master` |
-| `music_volume` | `Music` |
-| `sfx_volume` | `SFX` |
-| `ui_volume` | `UI` |
+**Audio buses.** The default schema only wires volume into Godot's built-in `Master` bus (`master_volume`). `music_volume`, `sfx_volume`, and `ui_volume` are included to demo the schema's `keys[]` batching — they won't do anything until you add matching buses (`Music`, `SFX`, `UI`) and route audio through them.
 
 ## Schema shape
 
@@ -163,9 +156,10 @@ Actions can have multiple keyboard and controller bindings. The keybind editor s
 
 The UI is intentionally simple: tabs, rows, and value editors. It is meant to get you running, not lock you into one look.
 
-- Apply a **Theme** to the settings scene (or a parent) to restyle controls
+A small theme ships at `addons/sweetpeas-settings/theme/sweetpeas_settings.tres` with a few custom colors. Extend it, fold those entries into your project's theme, or apply a different theme to the settings scene (or a parent) to restyle controls.
+
 - Edit or replace the scenes under `ui/` and `components/` to change layout and behavior
-- Wire custom appliers via `SettingsManager` when a setting needs to affect your own systems
+- Wire custom appliers via `SweetSettings` when a setting needs to affect your own systems
 
 ## Default sections
 

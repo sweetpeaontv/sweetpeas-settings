@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dw23lapa2758o"
-path="res://.godot/imported/sweetpeas-settings.png-9bda9b142ea67035cb9fee3695281e09.ctex"
+uid="uid://cn5wxthcor0bv"
+path="res://.godot/imported/sweet-settings.png-1bd37f67ae3579b2888b5065e975b0fc.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/sweetpeas-settings.png"
-dest_files=["res://.godot/imported/sweetpeas-settings.png-9bda9b142ea67035cb9fee3695281e09.ctex"]
+source_file="res://images/sweet-settings.png"
+dest_files=["res://.godot/imported/sweet-settings.png-1bd37f67ae3579b2888b5065e975b0fc.ctex"]
 
 [params]
 

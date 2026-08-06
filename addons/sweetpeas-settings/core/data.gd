@@ -1,5 +1,5 @@
 # data.gd
-class_name SettingsData
+class_name SweetSettingsData
 extends RefCounted
 
 const SAVE_PATH: String = "user://settings.json"
@@ -7,7 +7,7 @@ const SAVE_PATH: String = "user://settings.json"
 # schema and player selected values are stored separately in order to preserve default values as defaults and not player decisions.
 # if instead we stored the data in 1 dict, then any value that a player does not change is treated as their decision
 # meaning if the setting changes later, it will not reflect the new default value, but instead a value the player never touched.
-var _schema: SettingsSchema
+var _schema: SweetSettingsSchema
 var _overrides: Dictionary = {}
 
 # save i/o runs on WorkerThreadPool
@@ -16,7 +16,7 @@ var _write_mutex := Mutex.new()
 var _save_generation: int = 0
 var _pending_task_ids: Array[int] = []
 
-func _init(schema: SettingsSchema) -> void:
+func _init(schema: SweetSettingsSchema) -> void:
 	_schema = schema
 
 # VALUES
@@ -45,7 +45,7 @@ func set_value(key: String, value: Variant) -> bool:
 
 func _values_equal(key: String, a: Variant, b: Variant) -> bool:
 	if str(_schema.get_setting(key).get("type", "")) == "keybind":
-		return InputBinding.same_binding(a, b)
+		return SweetInputBinding.same_binding(a, b)
 	return a == b
 #================================================================================#
 
@@ -78,7 +78,7 @@ func sanitize_resolution() -> bool:
 			in_options = true
 			break
 
-	if in_options and SettingSources.resolution_fits_screens(value):
+	if in_options and SweetSettingSources.resolution_fits_screens(value):
 		return false
 
 	_overrides.erase(RESOLUTION_KEY)
@@ -87,8 +87,8 @@ func sanitize_resolution() -> bool:
 
 # SAVE/LOAD
 #================================================================================#
-static func load_or_create(schema: SettingsSchema) -> SettingsData:
-	var data := SettingsData.new(schema)
+static func load_or_create(schema: SweetSettingsSchema) -> SweetSettingsData:
+	var data := SweetSettingsData.new(schema)
 	if FileAccess.file_exists(SAVE_PATH):
 		data._read()
 	return data

@@ -1,10 +1,10 @@
 # setting_applier.gd
 # Pushes stored setting values into the engine. Built-ins live here;
-# games can register extra push-style keys via SettingsManager.
+# games can register extra push-style keys via SweetSettings.
 #
 # Applier callables take either (value) or (key, value). apply() picks by
 # Callable.get_argument_count().
-class_name SettingApplier
+class_name SweetSettingApplier
 extends RefCounted
 
 enum DisplayMode {
@@ -20,7 +20,7 @@ const _VOLUME_BUSES := {
 	"ui_volume": "UI",
 }
 
-var data: SettingsData
+var data: SweetSettingsData
 var _appliers: Dictionary = {} # String key -> Callable(value) or Callable(key, value)
 
 func _init() -> void:
@@ -32,7 +32,7 @@ func _init() -> void:
 	for key in _VOLUME_BUSES:
 		_appliers[key] = _apply_volume
 
-func setup(p_data: SettingsData, p_schema: SettingsSchema) -> void:
+func setup(p_data: SweetSettingsData, p_schema: SweetSettingsSchema) -> void:
 	data = p_data
 
 	for key in p_schema.keys():
@@ -90,7 +90,7 @@ func _apply_resolution(value: Variant) -> void:
 	if data != null and int(data.get_value("display_mode")) != DisplayMode.WINDOWED:
 		return
 
-	var size := SettingSources.parse_resolution(str(value))
+	var size := SweetSettingSources.parse_resolution(str(value))
 	if size == Vector2i.ZERO:
 		return
 	DisplayServer.window_set_size(size)
@@ -141,5 +141,5 @@ func _apply_volume(key: String, value: Variant) -> void:
 # CONTROLS
 #================================================================================#
 func _apply_keybind(key: String, value: Variant) -> void:
-	InputBinding.apply_to_action(key, value)
+	SweetInputBinding.apply_to_action(key, value)
 #================================================================================#

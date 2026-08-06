@@ -1,6 +1,6 @@
 # setting_sources.gd
 # Fills options / defaults from the runtime environment after JSON schema normalize.
-class_name SettingSources
+class_name SweetSettingSources
 extends RefCounted
 
 const OPTIONS_SOURCE := "options_source"
@@ -25,7 +25,7 @@ const _FALLBACK_SIZE := Vector2i(1920, 1080)
 
 # APPLY
 #================================================================================#
-static func apply(schema: SettingsSchema) -> void:
+static func apply(schema: SweetSettingsSchema) -> void:
 	_inject_section_sources(schema)
 
 	for key in schema.keys():
@@ -33,7 +33,7 @@ static func apply(schema: SettingsSchema) -> void:
 
 	_fill_keybind_defaults(schema)
 
-static func _inject_section_sources(schema: SettingsSchema) -> void:
+static func _inject_section_sources(schema: SweetSettingsSchema) -> void:
 	for section in schema.sections:
 		match str(section.get("settings_source", "")):
 			"":
@@ -46,7 +46,7 @@ static func _inject_section_sources(schema: SettingsSchema) -> void:
 					% [section.get("settings_source"), section.get("id")]
 				)
 
-static func _inject_input_map(schema: SettingsSchema, section: Dictionary) -> void:
+static func _inject_input_map(schema: SweetSettingsSchema, section: Dictionary) -> void:
 	var section_id := str(section.get("id", ""))
 	var exclude_prefixes: Array = section.get("exclude_prefixes", [])
 	var actions: Array = InputMap.get_actions()
@@ -62,7 +62,7 @@ static func _inject_input_map(schema: SettingsSchema, section: Dictionary) -> vo
 		schema.inject_setting(section_id, {
 			"key": name,
 			"type": "keybind",
-			"default": InputBinding.snapshot_action(action),
+			"default": SweetInputBinding.snapshot_action(action),
 			"section": section_id,
 		})
 
@@ -72,14 +72,14 @@ static func _excluded_by_prefix(action_name: String, prefixes: Array) -> bool:
 			return true
 	return false
 
-static func _fill_keybind_defaults(schema: SettingsSchema) -> void:
+static func _fill_keybind_defaults(schema: SweetSettingsSchema) -> void:
 	for key in schema.keys():
 		var setting := schema.get_setting(key)
 		if str(setting.get("type", "")) != "keybind":
 			continue
 
 		if InputMap.has_action(key):
-			setting["default"] = InputBinding.snapshot_action(StringName(key))
+			setting["default"] = SweetInputBinding.snapshot_action(StringName(key))
 
 static func _apply_setting(setting: Dictionary) -> void:
 	if setting.has(OPTIONS_SOURCE):

@@ -1,6 +1,6 @@
 # keyboard_icon_map.gd
 # Maps Key / MouseButton to SVG paths.
-class_name KeyboardIconMap
+class_name SweetKeyboardIconMap
 extends RefCounted
 
 const _SUBDIR = "keyboard-mouse"

@@ -1,16 +1,16 @@
 # controller_icon_map.gd
 # Maps JoyButton / JoyAxis to an icon path for a given controller family.
 
-class_name ControllerIconMap
+class_name SweetControllerIconMap
 extends RefCounted
 
-const FAMILY_XBOX := InputDeviceTracker.FAMILY_XBOX
-const FAMILY_PLAYSTATION := InputDeviceTracker.FAMILY_PLAYSTATION
-const FAMILY_SWITCH := InputDeviceTracker.FAMILY_SWITCH
-const FAMILY_SWITCH_2 := InputDeviceTracker.FAMILY_SWITCH_2
-const FAMILY_STEAM_DECK := InputDeviceTracker.FAMILY_STEAM_DECK
-const FAMILY_STEAM_CONTROLLER := InputDeviceTracker.FAMILY_STEAM_CONTROLLER
-const FAMILY_STEAM_CONTROLLER_2 := InputDeviceTracker.FAMILY_STEAM_CONTROLLER_2
+const FAMILY_XBOX := SweetInputDeviceTracker.FAMILY_XBOX
+const FAMILY_PLAYSTATION := SweetInputDeviceTracker.FAMILY_PLAYSTATION
+const FAMILY_SWITCH := SweetInputDeviceTracker.FAMILY_SWITCH
+const FAMILY_SWITCH_2 := SweetInputDeviceTracker.FAMILY_SWITCH_2
+const FAMILY_STEAM_DECK := SweetInputDeviceTracker.FAMILY_STEAM_DECK
+const FAMILY_STEAM_CONTROLLER := SweetInputDeviceTracker.FAMILY_STEAM_CONTROLLER
+const FAMILY_STEAM_CONTROLLER_2 := SweetInputDeviceTracker.FAMILY_STEAM_CONTROLLER_2
 
 const _AXIS_DEADZONE := 0.5
 
@@ -379,7 +379,7 @@ const _PROFILES := {
 # Narrows a detected family to one that has art. Unknown families render as Xbox.
 static func resolve_family(family: String) -> String:
 	if family.is_empty():
-		family = InputDeviceTracker.current_family()
+		family = SweetInputDeviceTracker.current_family()
 	return family if _PROFILES.has(family) else FAMILY_XBOX
 
 static func path_for_button(button: JoyButton, family: String = "") -> String:

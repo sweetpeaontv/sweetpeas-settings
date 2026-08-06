@@ -80,7 +80,7 @@ func _input(event: InputEvent) -> void:
 	if not _is_pressed_bind_event(event):
 		return
 
-	var column: String = InputBinding.column_for_event(event)
+	var column: String = SweetInputBinding.column_for_event(event)
 	if column != _listening_column:
 		return
 
@@ -93,7 +93,7 @@ func _input(event: InputEvent) -> void:
 		normalized.axis_value = signf(motion.axis_value)
 		event = normalized
 
-	var encoded: Variant = InputBinding.encode_event(event)
+	var encoded: Variant = SweetInputBinding.encode_event(event)
 	if encoded == null:
 		return
 

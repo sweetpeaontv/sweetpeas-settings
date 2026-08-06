@@ -17,14 +17,14 @@ const SETTINGS_PANEL = preload("uid://14pcikrgghwh")
 # INIT
 #================================================================================#
 func _ready() -> void:
-	for section in SettingsManager.schema.sections:
+	for section in SweetSettings.schema.sections:
 		_build_section(section)
 
 	if _panels.is_empty():
 		return
 
 	tab_bar.tab_changed.connect(_on_tab_changed)
-	SettingsManager.setting_changed.connect(_on_setting_changed)
+	SweetSettings.setting_changed.connect(_on_setting_changed)
 	_refresh_disabled_states()
 	_refresh_keybind_conflicts()
 	body.show()
@@ -59,7 +59,7 @@ func _build_section(section: Dictionary) -> void:
 		if i < settings.size() - 1:
 			container.add_child(HSeparator.new())
 
-		row.setup(setting, SettingsManager.get_setting(key))
+		row.setup(setting, SweetSettings.get_setting(key))
 		row.value_changed.connect(_on_row_value_changed.bind(key))
 		_rows[key] = row
 
@@ -103,10 +103,10 @@ func _wire_section_reset_footers(section_id: String, footer_controls: Array[Cont
 # SIGNAL HANDLERS
 #================================================================================#
 func _on_row_value_changed(value: Variant, key: String) -> void:
-	SettingsManager.set_setting(key, value)
+	SweetSettings.set_setting(key, value)
 
 func _on_section_reset_requested(section_id: String) -> void:
-	SettingsManager.reset_section(section_id)
+	SweetSettings.reset_section(section_id)
 
 func _on_setting_changed(key: String, value: Variant) -> void:
 	if key == "language":
@@ -126,16 +126,16 @@ func _on_tab_changed(idx: int) -> void:
 # REFRESH
 #================================================================================#
 func _refresh_keybind_conflicts() -> void:
-	var conflicts := SettingsManager.get_keybind_conflicts()
+	var conflicts := SweetSettings.get_keybind_conflicts()
 	for key in _rows:
 		var row = _rows[key]
 		if row.has_method("refresh_keybind_conflicts"):
 			row.refresh_keybind_conflicts(conflicts)
 
 func _is_keybind_setting(key: String) -> bool:
-	if not SettingsManager.schema.has_key(key):
+	if not SweetSettings.schema.has_key(key):
 		return false
-	return str(SettingsManager.schema.get_setting(key).get("type", "")) == "keybind"
+	return str(SweetSettings.schema.get_setting(key).get("type", "")) == "keybind"
 
 func _refresh_localized_text() -> void:
 	for index in _sections.size():
@@ -156,13 +156,13 @@ func _refresh_disabled_states() -> void:
 # HELPERS
 #================================================================================#
 func _is_setting_disabled(key: String) -> bool:
-	var setting: Dictionary = SettingsManager.schema.get_setting(key)
+	var setting: Dictionary = SweetSettings.schema.get_setting(key)
 	var conditions: Variant = setting.get("disabled_when", {})
 	if not conditions is Dictionary or (conditions as Dictionary).is_empty():
 		return false
 
 	for dep_key in conditions:
-		var current: Variant = SettingsManager.get_setting(str(dep_key))
+		var current: Variant = SweetSettings.get_setting(str(dep_key))
 		var expected: Variant = conditions[dep_key]
 		if expected is Array:
 			if not _value_matches_any(current, expected):

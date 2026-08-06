@@ -1,5 +1,5 @@
 # input_device_tracker.gd
-class_name InputDeviceTracker
+class_name SweetInputDeviceTracker
 extends RefCounted
 
 const KIND_KEYBOARD: String = "keyboard"

@@ -11,7 +11,7 @@ signal clear_pressed(column: String, index: int)
 const _UNBOUND_TEXT: String = "—"
 const _SLOT_SCENE = preload("uid://c0uhrmy4gxqqv")
 
-var _binding: Dictionary = InputBinding.empty_binding()
+var _binding: Dictionary = SweetInputBinding.empty_binding()
 var _conflicts: Dictionary = {}
 var _setting_key: String = ""
 var _min_pair_rows: int = 1
@@ -33,12 +33,12 @@ func _ready() -> void:
 # API
 #================================================================================#
 func set_binding(binding: Dictionary) -> void:
-	_binding = InputBinding.coerce(binding)
+	_binding = SweetInputBinding.coerce(binding)
 	_min_pair_rows = maxi(_natural_pair_count(), 1)
 	sync()
 
 func get_binding() -> Dictionary:
-	return InputBinding.coerce(_binding)
+	return SweetInputBinding.coerce(_binding)
 
 func set_setting_key(key: String) -> void:
 	_setting_key = key
@@ -100,8 +100,8 @@ func sync() -> void:
 #================================================================================#
 func _natural_pair_count() -> int:
 	return maxi(
-		(_binding.get(InputBinding.KEYBOARD, []) as Array).size(),
-		(_binding.get(InputBinding.CONTROLLER, []) as Array).size()
+		(_binding.get(SweetInputBinding.KEYBOARD, []) as Array).size(),
+		(_binding.get(SweetInputBinding.CONTROLLER, []) as Array).size()
 	)
 
 func _pair_row_count() -> int:
@@ -127,8 +127,8 @@ func _rebuild_pairs() -> void:
 		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		add_child(row)
 
-		_create_slot(row, InputBinding.KEYBOARD, index)
-		_create_slot(row, InputBinding.CONTROLLER, index)
+		_create_slot(row, SweetInputBinding.KEYBOARD, index)
+		_create_slot(row, SweetInputBinding.CONTROLLER, index)
 
 	_refresh_slots()
 
@@ -169,7 +169,7 @@ func _refresh_slot(entry: Dictionary) -> void:
 		slot.set_conflicted(false)
 		return
 
-	var event: InputEvent = InputBinding.decode_event(encoded)
+	var event: InputEvent = SweetInputBinding.decode_event(encoded)
 	var texture: Texture2D = SweetIcons.texture_for_event(event) if event else null
 	if texture != null:
 		slot.set_display(texture, "")
@@ -185,7 +185,7 @@ func _refresh_slot(entry: Dictionary) -> void:
 func _conflict_keys_for(encoded: Variant) -> Array:
 	if encoded == null:
 		return []
-	var fingerprint: String = InputBinding.event_fingerprint(encoded)
+	var fingerprint: String = SweetInputBinding.event_fingerprint(encoded)
 	if fingerprint.is_empty() or not _conflicts.has(fingerprint):
 		return []
 	var keys: Array = []
@@ -204,9 +204,9 @@ func _conflict_tooltip(other_keys: Array) -> String:
 
 func _setting_label(key: String) -> String:
 	# Match setting_row: tr(label override) or tr(key).
-	if SettingsManager.schema == null or not SettingsManager.schema.has_key(key):
+	if SweetSettings.schema == null or not SweetSettings.schema.has_key(key):
 		return tr(key)
-	var setting: Dictionary = SettingsManager.schema.get_setting(key)
+	var setting: Dictionary = SweetSettings.schema.get_setting(key)
 	return tr(str(setting.get("label", key)))
 #================================================================================#
 

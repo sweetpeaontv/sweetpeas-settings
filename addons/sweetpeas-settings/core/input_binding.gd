@@ -1,6 +1,6 @@
 # input_binding.gd
 # InputMap events <-> { "keyboard": [...], "controller": [...] } for settings JSON.
-class_name InputBinding
+class_name SweetInputBinding
 extends RefCounted
 
 const KEYBOARD := "keyboard"

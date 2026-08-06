@@ -1,6 +1,6 @@
 # settings_schema.gd
-# SettingsSchema is a parsed and normalized instance of the config schema file
-class_name SettingsSchema
+# SweetSettingsSchema is a parsed and normalized instance of the config schema file
+class_name SweetSettingsSchema
 extends RefCounted
 
 const CONFIG_DIR := "res://addons/sweetpeas-settings/config"
@@ -15,8 +15,8 @@ var _by_key: Dictionary = {}
 
 # LOADING
 #================================================================================#
-static func load_schema() -> SettingsSchema:
-	var schema := SettingsSchema.new()
+static func load_schema() -> SweetSettingsSchema:
+	var schema := SweetSettingsSchema.new()
 	schema.source_path = resolve_path()
 
 	if not FileAccess.file_exists(schema.source_path):
@@ -29,7 +29,7 @@ static func load_schema() -> SettingsSchema:
 		return schema
 
 	schema._build(parsed)
-	SettingSources.apply(schema)
+	SweetSettingSources.apply(schema)
 	return schema
 
 static func resolve_path() -> String:
@@ -104,7 +104,7 @@ func coerce(key: String, value: Variant) -> Variant:
 	var default_value: Variant = setting["default"]
 
 	if str(setting.get("type", "")) == "keybind":
-		return InputBinding.coerce(value, default_value)
+		return SweetInputBinding.coerce(value, default_value)
 
 	var coerced: Variant = _to_type(value, typeof(default_value))
 
@@ -339,8 +339,8 @@ func _normalize_setting(raw_setting: Dictionary, shared: Dictionary, section_id:
 
 	if not setting.has("default"):
 		if setting["type"] == "keybind":
-			# Filled from the project Input Map in SettingSources.
-			setting["default"] = InputBinding.empty_binding()
+			# Filled from the project Input Map in SweetSettingSources.
+			setting["default"] = SweetInputBinding.empty_binding()
 		else:
 			var options: Array = setting.get("options", [])
 			if options.is_empty():
