@@ -1,4 +1,4 @@
-class_name Badge
+class_name SweetBadge
 extends Button
 
 const _SIZE: Vector2 = Vector2(22, 22)

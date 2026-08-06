@@ -1,4 +1,4 @@
-class_name KeybindEditor
+class_name SweetKeybindEditor
 extends HBoxContainer
 """
 The keybind control for one setting: listens for a new bind, hosts the pairs grid and add button,
@@ -9,8 +9,8 @@ signal value_changed(value: Dictionary)
 
 const _AXIS_DEADZONE: float = 0.5
 
-var _pairs: KeybindPairs
-var _add_button: IconButton
+var _pairs: SweetKeybindPairs
+var _add_button: SweetIconButton
 
 var _setting_key: String = ""
 var _listening_column: String = ""
@@ -68,7 +68,7 @@ func _input(event: InputEvent) -> void:
 	if _listening_column.is_empty() or _listening_index < 0:
 		return
 
-	Icons.note_input_event(event)
+	SweetIcons.note_input_event(event)
 
 	# _input runs before GUI, so mouse clicks on the clear badge would otherwise
 	# be captured as a mouse-button bind. Let the badge handle those.
@@ -108,13 +108,13 @@ func _ensure_nodes() -> void:
 	if _pairs != null:
 		return
 
-	_pairs = $Pairs as KeybindPairs
-	_add_button = $AddButton as IconButton
+	_pairs = $Pairs as SweetKeybindPairs
+	_add_button = $AddButton as SweetIconButton
 	_add_button.custom_minimum_size = Vector2(40, 40)
 	_add_button.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	_add_button.set_content_margins(0)
 	_add_button.set_icon_size(Vector2(40, 40))
-	var plus: Texture2D = Icons.load_texture(Icons.join("keyboard-mouse", "keyboard_plus.svg"))
+	var plus: Texture2D = SweetIcons.load_texture(SweetIcons.join("keyboard-mouse", "keyboard_plus.svg"))
 	if plus != null:
 		_add_button.set_icon(plus)
 		_add_button.set_text("")

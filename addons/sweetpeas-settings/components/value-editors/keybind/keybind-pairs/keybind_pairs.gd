@@ -1,4 +1,4 @@
-class_name KeybindPairs
+class_name SweetKeybindPairs
 extends VBoxContainer
 """
 All keyboard/controller binding rows for one keybind setting (one action).
@@ -19,7 +19,7 @@ var _disabled: bool = false
 var _listening_column: String = ""
 var _listening_index: int = -1
 
-# Each entry: { "slot": KeybindSlot, "column": String, "index": int }
+# Each entry: { "slot": SweetKeybindSlot, "column": String, "index": int }
 var _slot_entries: Array[Dictionary] = []
 
 # INIT
@@ -46,7 +46,7 @@ func set_setting_key(key: String) -> void:
 func set_disabled(disabled: bool) -> void:
 	_disabled = disabled
 	for entry in _slot_entries:
-		var slot: KeybindSlot = entry["slot"]
+		var slot: SweetKeybindSlot = entry["slot"]
 		slot.set_disabled(disabled)
 
 func set_listening(column: String, index: int) -> void:
@@ -85,7 +85,7 @@ func is_clear_badge_at(column: String, index: int, global_pos: Vector2) -> bool:
 	for entry in _slot_entries:
 		if entry["column"] != column or entry["index"] != index:
 			continue
-		var slot: KeybindSlot = entry["slot"]
+		var slot: SweetKeybindSlot = entry["slot"]
 		return slot.is_clear_badge_at(global_pos)
 	return false
 
@@ -133,7 +133,7 @@ func _rebuild_pairs() -> void:
 	_refresh_slots()
 
 func _create_slot(row: HBoxContainer, column: String, index: int) -> void:
-	var slot: KeybindSlot = _SLOT_SCENE.instantiate()
+	var slot: SweetKeybindSlot = _SLOT_SCENE.instantiate()
 	slot.set_disabled(_disabled)
 	slot.pressed.connect(_on_slot_pressed.bind(column, index))
 	slot.clear_pressed.connect(_on_clear_pressed.bind(column, index))
@@ -152,7 +152,7 @@ func _refresh_slots() -> void:
 		_refresh_slot(entry)
 
 func _refresh_slot(entry: Dictionary) -> void:
-	var slot: KeybindSlot = entry["slot"]
+	var slot: SweetKeybindSlot = entry["slot"]
 	var column: String = entry["column"]
 	var index: int = entry["index"]
 	var listening: bool = _listening_column == column and _listening_index == index
@@ -170,7 +170,7 @@ func _refresh_slot(entry: Dictionary) -> void:
 		return
 
 	var event: InputEvent = InputBinding.decode_event(encoded)
-	var texture: Texture2D = Icons.texture_for_event(event) if event else null
+	var texture: Texture2D = SweetIcons.texture_for_event(event) if event else null
 	if texture != null:
 		slot.set_display(texture, "")
 	else:

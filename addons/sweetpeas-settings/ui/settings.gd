@@ -81,7 +81,7 @@ func _create_section_components(components: Array) -> Array[Control]:
 	for component in components:
 		if not component is Dictionary:
 			continue
-		var control := SectionComponentRegistry.create(str(component.get("type", "")))
+		var control := SweetSectionComponentRegistry.create(str(component.get("type", "")))
 		if control == null:
 			continue
 		controls.append(control)

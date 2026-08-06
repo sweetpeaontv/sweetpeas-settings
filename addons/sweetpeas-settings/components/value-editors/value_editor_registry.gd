@@ -1,4 +1,4 @@
-class_name ValueEditorRegistry
+class_name SweetValueEditorRegistry
 extends RefCounted
 
 const _BasicValueEditors := preload(
@@ -13,7 +13,7 @@ const _KeybindValueEditor := preload(
 
 static var _editors: Dictionary = {}
 
-static func create(type: String) -> ValueEditor:
+static func create(type: String) -> SweetValueEditor:
 	_ensure_editors()
 
 	var editor_class: Variant = _editors.get(type)

@@ -1,4 +1,4 @@
-class_name SectionComponentRegistry
+class_name SweetSectionComponentRegistry
 extends RefCounted
 
 const _CONTROL_HEADER = preload("uid://cdvy1chp7018j")

@@ -1,4 +1,4 @@
-class_name NumericSlider
+class_name SweetNumericSlider
 extends HBoxContainer
 
 signal value_changed(value: float)

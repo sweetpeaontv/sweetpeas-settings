@@ -1,4 +1,4 @@
-class_name IconButton
+class_name SweetIconButton
 extends Control
 
 signal pressed
@@ -10,7 +10,7 @@ var _button: Button
 var _content: MarginContainer
 var _icon: TextureRect
 var _label: Label
-var _badge: Badge
+var _badge: SweetBadge
 
 var _text := "—"
 var _texture: Texture2D = null
@@ -40,7 +40,7 @@ func _ensure_nodes() -> void:
 	_content = $Button/Content as MarginContainer
 	_icon = $Button/Content/Center/Icon
 	_label = $Button/Content/Center/Label
-	_badge = $Badge as Badge
+	_badge = $Badge as SweetBadge
 
 	if _badge != null:
 		_badge.set_badge_visible(false)
@@ -153,7 +153,7 @@ func set_badge_disabled(disabled: bool) -> void:
 		return
 	_badge.set_disabled(disabled)
 
-func get_badge() -> Badge:
+func get_badge() -> SweetBadge:
 	_ensure_nodes()
 	return _badge
 #================================================================================#

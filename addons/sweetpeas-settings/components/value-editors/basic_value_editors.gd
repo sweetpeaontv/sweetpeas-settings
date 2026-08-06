@@ -1,7 +1,7 @@
-class_name BasicValueEditors
+class_name SweetBasicValueEditors
 extends RefCounted
 
-class SliderValueEditor extends ValueEditor:
+class SliderValueEditor extends SweetValueEditor:
 	var _root: HBoxContainer
 	var _min_label: Label
 	var _slider: HSlider
@@ -65,7 +65,7 @@ class SliderValueEditor extends ValueEditor:
 	func _on_value_changed(value: float) -> void:
 		value_changed.emit(value)
 
-class OptionValueEditor extends ValueEditor:
+class OptionValueEditor extends SweetValueEditor:
 	var _option_button: OptionButton
 
 	func _init() -> void:
@@ -107,7 +107,7 @@ class OptionValueEditor extends ValueEditor:
 			return float(a) == float(b)
 		return false
 
-class SpinboxValueEditor extends ValueEditor:
+class SpinboxValueEditor extends SweetValueEditor:
 	var _spinbox: SpinBox
 
 	func _init() -> void:
@@ -136,7 +136,7 @@ class SpinboxValueEditor extends ValueEditor:
 	func _on_value_changed(value: float) -> void:
 		value_changed.emit(value)
 
-class ToggleValueEditor extends ValueEditor:
+class ToggleValueEditor extends SweetValueEditor:
 	var _checkbox: CheckBox
 
 	func _init() -> void:

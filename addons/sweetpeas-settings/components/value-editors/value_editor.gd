@@ -1,4 +1,4 @@
-class_name ValueEditor
+class_name SweetValueEditor
 extends RefCounted
 
 signal value_changed(value: Variant)
@@ -7,7 +7,7 @@ func get_control() -> Control:
 	return null
 
 func setup(_setting: Dictionary) -> void:
-	push_error("ValueEditor: setup not implemented")
+	push_error("SweetValueEditor: setup not implemented")
 
 func get_value() -> Variant:
 	return null

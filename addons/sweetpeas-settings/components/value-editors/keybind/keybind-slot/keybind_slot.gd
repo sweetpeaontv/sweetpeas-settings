@@ -1,10 +1,10 @@
-class_name KeybindSlot
+class_name SweetKeybindSlot
 extends Control
 """
 One keybind cell in the row - shows the icon or label, waiting state, clear badge, and conflict tint.
 """
 
-## Theme color: KeybindSlot / conflict_icon_modulate (fallback yellow).
+## Theme color: SweetKeybindSlot / conflict_icon_modulate (fallback yellow).
 
 signal pressed
 signal clear_pressed
@@ -14,7 +14,7 @@ const _SLOT_MIN_SIZE: Vector2 = Vector2(72, 40)
 const _ICON_SIZE: Vector2 = Vector2(40, 40)
 const _WAITING_TEXT: String = "..."
 
-var _icon_button: IconButton
+var _icon_button: SweetIconButton
 
 var _listening: bool = false
 var _conflicted: bool = false
@@ -35,7 +35,7 @@ func _ensure_nodes() -> void:
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	clip_contents = false
 
-	_icon_button = $IconButton as IconButton
+	_icon_button = $IconButton as SweetIconButton
 	if _icon_button != null:
 		_icon_button.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		_icon_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -92,7 +92,7 @@ func is_clear_badge_at(global_pos: Vector2) -> bool:
 	_ensure_nodes()
 	if _icon_button == null:
 		return false
-	var badge: Badge = _icon_button.get_badge()
+	var badge: SweetBadge = _icon_button.get_badge()
 	if badge == null or not badge.visible:
 		return false
 	return badge.get_global_rect().has_point(global_pos)
@@ -101,12 +101,12 @@ func is_clear_badge_at(global_pos: Vector2) -> bool:
 # INTERNAL
 #================================================================================#
 func _waiting_texture() -> Texture2D:
-	return Icons.load_texture(Icons.join("keyboard-mouse", "keyboard_any.svg"))
+	return SweetIcons.load_texture(SweetIcons.join("keyboard-mouse", "keyboard_any.svg"))
 
 func _conflict_modulate() -> Color:
-	# Themes can override: theme type "KeybindSlot", color name "conflict_icon_modulate".
-	if has_theme_color("conflict_icon_modulate", "KeybindSlot"):
-		return get_theme_color("conflict_icon_modulate", "KeybindSlot")
+	# Themes can override: theme type "SweetKeybindSlot", color name "conflict_icon_modulate".
+	if has_theme_color("conflict_icon_modulate", "SweetKeybindSlot"):
+		return get_theme_color("conflict_icon_modulate", "SweetKeybindSlot")
 	return _DEFAULT_CONFLICT_MODULATE
 
 func _apply_conflict_visuals() -> void:

@@ -1,4 +1,4 @@
-class_name SectionResetButton
+class_name SweetSectionResetButton
 extends MarginContainer
 
 signal reset_requested

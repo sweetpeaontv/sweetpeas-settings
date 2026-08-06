@@ -89,11 +89,11 @@ const _MOUSE_BUTTONS := {
 #================================================================================#
 static func path_for_key(key: Key) -> String:
 	var file = _key_file(key)
-	return Icons.join(_SUBDIR, file) if not file.is_empty() else ""
+	return SweetIcons.join(_SUBDIR, file) if not file.is_empty() else ""
 
 static func path_for_mouse_button(button: MouseButton) -> String:
 	var file = str(_MOUSE_BUTTONS.get(button, ""))
-	return Icons.join(_SUBDIR, file) if not file.is_empty() else ""
+	return SweetIcons.join(_SUBDIR, file) if not file.is_empty() else ""
 
 static func path_for_event(event: InputEvent) -> String:
 	if event is InputEventKey:
@@ -105,13 +105,13 @@ static func path_for_event(event: InputEvent) -> String:
 	return ""
 
 static func texture_for_key(key: Key) -> Texture2D:
-	return Icons.load_texture(path_for_key(key))
+	return SweetIcons.load_texture(path_for_key(key))
 
 static func texture_for_mouse_button(button: MouseButton) -> Texture2D:
-	return Icons.load_texture(path_for_mouse_button(button))
+	return SweetIcons.load_texture(path_for_mouse_button(button))
 
 static func texture_for_event(event: InputEvent) -> Texture2D:
-	return Icons.load_texture(path_for_event(event))
+	return SweetIcons.load_texture(path_for_event(event))
 #================================================================================#
 
 # INTERNAL

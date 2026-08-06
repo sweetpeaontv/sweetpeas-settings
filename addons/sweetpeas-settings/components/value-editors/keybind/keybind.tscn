@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://74rotn6prfqv"]
 
 [ext_resource type="Script" uid="uid://dsakjl531sxt5" path="res://addons/sweetpeas-settings/components/value-editors/keybind/keybind.gd" id="1_keybind"]
-[ext_resource type="PackedScene" uid="uid://cdlcg5uhf1qjq" path="res://addons/sweetpeas-settings/components/icon/icon-button.tscn" id="2_icon"]
-[ext_resource type="PackedScene" uid="uid://b8kpairs7xq2m" path="res://addons/sweetpeas-settings/components/value-editors/keybind/keybind-pairs/keybind_pairs.tscn" id="3_pairs"]
+[ext_resource type="PackedScene" uid="uid://cdlcg5uhf1qjq" path="res://addons/sweetpeas-settings/components/icon-button/icon-button.tscn" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://lceuybuighrs" path="res://addons/sweetpeas-settings/components/value-editors/keybind/keybind-pairs/keybind_pairs.tscn" id="3_pairs"]
 
 [node name="KeybindEditor" type="HBoxContainer" unique_id=203564894]
 theme_override_constants/separation = 6

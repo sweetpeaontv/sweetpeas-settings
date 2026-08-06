@@ -6,7 +6,7 @@ var _label: Label
 var _editor_container: HBoxContainer
 
 var _setting: Dictionary = {}
-var _editor: ValueEditor
+var _editor: SweetValueEditor
 var _disabled := false
 
 # INIT
@@ -28,7 +28,7 @@ func _mount_editor(initial_value: Variant) -> void:
 	for child in _editor_container.get_children():
 		child.queue_free()
 	
-	_editor = ValueEditorRegistry.create(_setting.get("type", ""))
+	_editor = SweetValueEditorRegistry.create(_setting.get("type", ""))
 	if _editor == null:
 		return
 

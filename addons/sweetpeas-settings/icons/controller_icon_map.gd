@@ -401,17 +401,17 @@ static func path_for_device(family: String = "") -> String:
 	return _join(family, str(_PROFILES[family].get("device", "")))
 
 static func texture_for_button(button: JoyButton, family: String = "") -> Texture2D:
-	return Icons.load_texture(path_for_button(button, family))
+	return SweetIcons.load_texture(path_for_button(button, family))
 
 static func texture_for_axis(
 	axis: JoyAxis,
 	axis_value: float = 1.0,
 	family: String = "",
 ) -> Texture2D:
-	return Icons.load_texture(path_for_axis(axis, axis_value, family))
+	return SweetIcons.load_texture(path_for_axis(axis, axis_value, family))
 
 static func texture_for_device(family: String = "") -> Texture2D:
-	return Icons.load_texture(path_for_device(family))
+	return SweetIcons.load_texture(path_for_device(family))
 #================================================================================#
 
 # INTERNAL
@@ -434,5 +434,5 @@ static func _axis_file(axis: JoyAxis, axis_value: float, family: String) -> Stri
 static func _join(family: String, file: String) -> String:
 	if file.is_empty():
 		return ""
-	return Icons.join(str(_PROFILES[family].get("dir", "")), file)
+	return SweetIcons.join(str(_PROFILES[family].get("dir", "")), file)
 #================================================================================#

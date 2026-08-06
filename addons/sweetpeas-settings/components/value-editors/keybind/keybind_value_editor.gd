@@ -1,9 +1,9 @@
-class_name KeybindValueEditor
-extends ValueEditor
+class_name SweetKeybindValueEditor
+extends SweetValueEditor
 
 const KEYBIND_SCENE = preload("uid://74rotn6prfqv")
 
-var _keybind: KeybindEditor
+var _keybind: SweetKeybindEditor
 
 func _init() -> void:
 	_keybind = KEYBIND_SCENE.instantiate()

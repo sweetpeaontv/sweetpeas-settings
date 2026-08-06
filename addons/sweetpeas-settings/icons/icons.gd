@@ -1,6 +1,6 @@
 # icons.gd
 # Device-agnostic input icon facade — dispatches by InputEvent type.
-class_name Icons
+class_name SweetIcons
 extends RefCounted
 
 const ICONS_ROOT = "res://addons/sweetpeas-settings/icons"

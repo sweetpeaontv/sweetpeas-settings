@@ -1,9 +1,9 @@
-class_name NumericSliderValueEditor
-extends ValueEditor
+class_name SweetNumericSliderValueEditor
+extends SweetValueEditor
 
 const NUMERIC_SLIDER = preload("uid://dg4olttlxhj0j")
 
-var _numeric_slider: NumericSlider
+var _numeric_slider: SweetNumericSlider
 
 func _init() -> void:
 	_numeric_slider = NUMERIC_SLIDER.instantiate()
